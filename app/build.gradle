@@ -3,6 +3,7 @@ plugins {
 }
 
 android {
+    namespace "com.example.logicgrid"  // Add this line
     compileSdkVersion 35
     defaultConfig {
         applicationId "com.example.logicgrid"
