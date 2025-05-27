@@ -9,7 +9,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import android.graphics.drawable.GradientDrawable;
-import android.view.Gravity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 
 public class MainActivity extends AppCompatActivity {
     private GridLayout gridLayout;
@@ -20,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
     private int currentLevel = 1;
     private boolean[][] solution;
     private static final int GRID_SIZE = 4;
+    private static final int CELL_SIZE = 85; // dp
+    private static final int CELL_MARGIN = 2; // dp
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,19 +42,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeGrid() {
+        gridLayout.setColumnCount(GRID_SIZE);
+        gridLayout.setRowCount(GRID_SIZE);
+
+        int dpToPx = (int) (getResources().getDisplayMetrics().density);
+        
         for (int i = 0; i < GRID_SIZE; i++) {
             for (int j = 0; j < GRID_SIZE; j++) {
                 Button cell = new Button(this);
                 GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-                params.width = 100;
-                params.height = 100;
-                params.setMargins(4, 4, 4, 4);
+                params.width = CELL_SIZE * dpToPx;
+                params.height = CELL_SIZE * dpToPx;
+                params.setMargins(CELL_MARGIN * dpToPx, CELL_MARGIN * dpToPx, 
+                                CELL_MARGIN * dpToPx, CELL_MARGIN * dpToPx);
                 cell.setLayoutParams(params);
 
                 GradientDrawable shape = new GradientDrawable();
                 shape.setShape(GradientDrawable.RECTANGLE);
                 shape.setColor(ContextCompat.getColor(this, android.R.color.white));
-                shape.setStroke(2, ContextCompat.getColor(this, android.R.color.black));
+                shape.setStroke(2 * dpToPx, ContextCompat.getColor(this, android.R.color.black));
                 cell.setBackground(shape);
 
                 final int row = i;
@@ -74,12 +83,48 @@ public class MainActivity extends AppCompatActivity {
         
         if (isSelected) {
             shape.setColor(ContextCompat.getColor(this, android.R.color.white));
+            cell.setText("");
             cell.setTag(false);
         } else {
             shape.setColor(ContextCompat.getColor(this, android.R.color.holo_blue_light));
+            cell.setText("✓");
+            cell.setTextColor(ContextCompat.getColor(this, android.R.color.white));
+            cell.setTextSize(24);
             cell.setTag(true);
         }
         cell.setBackground(shape);
+        validateGrid();
+    }
+
+    private void validateGrid() {
+        boolean isValid = true;
+        int[] rowCounts = new int[GRID_SIZE];
+        int[] colCounts = new int[GRID_SIZE];
+
+        // Count selected cells in each row and column
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
+                if (cells[i][j].getTag() != null && (boolean) cells[i][j].getTag()) {
+                    rowCounts[i]++;
+                    colCounts[j]++;
+                }
+            }
+        }
+
+        // Check if any row or column has more than one selection
+        for (int i = 0; i < GRID_SIZE; i++) {
+            if (rowCounts[i] > 1 || colCounts[i] > 1) {
+                isValid = false;
+                break;
+            }
+        }
+
+        if (!isValid) {
+            messageText.setText("Only one selection allowed per row and column");
+            messageText.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_light));
+        } else {
+            messageText.setText("");
+        }
     }
 
     private void loadLevel(int level) {
@@ -90,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < GRID_SIZE; i++) {
             for (int j = 0; j < GRID_SIZE; j++) {
                 cells[i][j].setTag(false);
+                cells[i][j].setText("");
                 GradientDrawable shape = new GradientDrawable();
                 shape.setShape(GradientDrawable.RECTANGLE);
                 shape.setColor(ContextCompat.getColor(this, android.R.color.white));
@@ -107,14 +153,14 @@ public class MainActivity extends AppCompatActivity {
         
         switch (level) {
             case 1:
-                // Simple pattern for level 1
+                // Diagonal pattern
                 levelSolution[0][0] = true;
                 levelSolution[1][1] = true;
                 levelSolution[2][2] = true;
                 levelSolution[3][3] = true;
                 break;
             case 2:
-                // X pattern for level 2
+                // X pattern
                 levelSolution[0][0] = true;
                 levelSolution[0][3] = true;
                 levelSolution[1][1] = true;
@@ -125,14 +171,14 @@ public class MainActivity extends AppCompatActivity {
                 levelSolution[3][3] = true;
                 break;
             case 3:
-                // Box pattern for level 3
+                // Box pattern (corners)
                 levelSolution[0][0] = true;
                 levelSolution[0][3] = true;
                 levelSolution[3][0] = true;
                 levelSolution[3][3] = true;
                 break;
             default:
-                // Default to simple pattern if level > 3
+                // Default to diagonal pattern
                 levelSolution[0][0] = true;
                 levelSolution[1][1] = true;
                 levelSolution[2][2] = true;
@@ -158,15 +204,32 @@ public class MainActivity extends AppCompatActivity {
 
         if (correct) {
             messageText.setText("Congratulations! Level completed!");
+            messageText.setTextColor(ContextCompat.getColor(this, android.R.color.holo_green_light));
+            
             if (currentLevel < 3) {
-                currentLevel++;
-                checkButton.postDelayed(() -> loadLevel(currentLevel), 1500);
+                new AlertDialog.Builder(this)
+                    .setTitle("Level Complete!")
+                    .setMessage("Ready for the next level?")
+                    .setPositiveButton("Next Level", (dialog, which) -> {
+                        currentLevel++;
+                        loadLevel(currentLevel);
+                    })
+                    .setCancelable(false)
+                    .show();
             } else {
-                messageText.setText("Congratulations! You've completed all levels!");
-                checkButton.setEnabled(false);
+                new AlertDialog.Builder(this)
+                    .setTitle("Congratulations!")
+                    .setMessage("You've completed all levels!")
+                    .setPositiveButton("Play Again", (dialog, which) -> {
+                        currentLevel = 1;
+                        loadLevel(currentLevel);
+                    })
+                    .setNegativeButton("Close", null)
+                    .show();
             }
         } else {
             messageText.setText("Try again!");
+            messageText.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_light));
         }
     }
 }
