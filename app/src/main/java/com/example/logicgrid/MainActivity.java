@@ -198,7 +198,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (!isValid) {
-            cell.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.shake));
+            // Replace this line:
+            // cell.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.shake));
+            // With this:
+            cell.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake));
             Toast.makeText(this, "Invalid move!", Toast.LENGTH_SHORT).show();
         }
     }
