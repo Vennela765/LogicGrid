@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Logic Grid Puzzle"
+        android:text="@string/title_text"
         android:textColor="@color/text_primary"
         android:textSize="32sp"
         android:textStyle="bold"
@@ -26,7 +26,7 @@
         android:background="@color/level_background"
         android:paddingHorizontal="24dp"
         android:paddingVertical="8dp"
-        android:text="Level: EASY - Puzzle 1"
+        android:text="@string/level_format"
         android:textColor="@color/level_text"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -46,29 +46,30 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/easyButton"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:backgroundTint="@color/primary"
-            android:text="EASY"
+            android:text="@string/difficulty_easy"
             android:textColor="@color/white" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/mediumButton"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text="MEDIUM"
-            android:textColor="@color/primary"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+            android:text="@string/difficulty_medium"
+            android:textColor="@color/primary" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/hardButton"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="HARD"
-            android:textColor="@color/primary"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+            android:text="@string/difficulty_hard"
+            android:textColor="@color/primary" />
     </LinearLayout>
 
     <LinearLayout
@@ -83,19 +84,21 @@
 
         <Button
             android:id="@+id/newPuzzleButton"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:backgroundTint="@color/button_blue"
-            android:text="NEW PUZZLE"
+            android:text="@string/new_puzzle"
             android:textColor="@color/white" />
 
         <Button
             android:id="@+id/checkButton"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/button_green"
-            android:text="CHECK SOLUTION"
+            android:text="@string/check_solution"
             android:textColor="@color/white" />
     </LinearLayout>
 
@@ -129,7 +132,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Clues:"
+                android:text="@string/clues_title"
                 android:textColor="@color/primary_light"
                 android:textSize="20sp"
                 android:textStyle="bold"

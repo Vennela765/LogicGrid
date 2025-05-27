@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">LogicGrid</string>
+    <string name="title_text">Logic Grid Puzzle</string>
+    <string name="level_format">Level: %1$s - Puzzle %2$d</string>
+    <string name="difficulty_easy">EASY</string>
+    <string name="difficulty_medium">MEDIUM</string>
+    <string name="difficulty_hard">HARD</string>
+    <string name="new_puzzle">NEW PUZZLE</string>
+    <string name="check_solution">CHECK SOLUTION</string>
+    <string name="clues_title">Clues:</string>
 </resources>
