@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import android.graphics.drawable.GradientDrawable;
 import android.view.animation.AnimationUtils;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     private GridLayout gridLayout;
@@ -34,11 +33,25 @@ public class MainActivity extends AppCompatActivity {
         {"Brown", "White", "Pink"}
     };
 
-    private String[] currentClues = {
-        "Bird is associated with Pink",
-        "Dog corresponds to Brown",
-        "Dog doesn't match with White",
-        "Cat is not associated with Brown"
+    private String[][] easyClues = {
+        {"Bird is associated with Pink", "Dog corresponds to Brown", 
+         "Dog doesn't match with White", "Cat is not associated with Brown"},
+        {"Cat matches with Pink", "Bird corresponds to White", 
+         "Dog is paired with Brown", "Cat is not matched with White"}
+    };
+
+    private String[][] mediumClues = {
+        {"Bird matches with White", "Cat corresponds to Pink", 
+         "Dog is paired with Brown", "Bird is not matched with Pink"},
+        {"Dog is associated with Brown", "Cat matches with White", 
+         "Bird corresponds to Pink", "Dog is not paired with White"}
+    };
+
+    private String[][] hardClues = {
+        {"Cat matches with Pink", "Dog is not associated with Pink", 
+         "Bird corresponds to White", "Dog matches with Brown"},
+        {"Bird is paired with Pink", "Cat corresponds to White", 
+         "Dog matches with Brown", "Bird is not associated with Brown"}
     };
 
     @Override
@@ -46,6 +59,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initializeViews();
+        setupDifficultyButtons();
+        setupActionButtons();
+        initializeGrid();
+        loadLevel(currentLevel);
+    }
+
+    private void initializeViews() {
         gridLayout = findViewById(R.id.gridLayout);
         levelText = findViewById(R.id.levelText);
         messageText = findViewById(R.id.messageText);
@@ -55,24 +76,19 @@ public class MainActivity extends AppCompatActivity {
         mediumButton = findViewById(R.id.mediumButton);
         hardButton = findViewById(R.id.hardButton);
         cluesList = findViewById(R.id.cluesList);
-
         cells = new Button[GRID_SIZE][GRID_SIZE];
-        
-        setupDifficultyButtons();
-        setupActionButtons();
-        initializeGrid();
-        loadLevel(currentLevel);
     }
 
     private void setupDifficultyButtons() {
         easyButton.setOnClickListener(v -> setDifficulty("EASY"));
         mediumButton.setOnClickListener(v -> setDifficulty("MEDIUM"));
         hardButton.setOnClickListener(v -> setDifficulty("HARD"));
+        updateDifficultyButtons();
     }
 
     private void setupActionButtons() {
         newPuzzleButton.setOnClickListener(v -> {
-            currentLevel++;
+            currentLevel = (currentLevel % 2) + 1;
             loadLevel(currentLevel);
         });
 
@@ -88,14 +104,25 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateDifficultyButtons() {
         easyButton.setBackgroundTintList(currentDifficulty.equals("EASY") ? 
-            ContextCompat.getColorStateList(this, R.color.primary_dark) :
-            null);
+            ContextCompat.getColorStateList(this, R.color.primary) : null);
+        easyButton.setStrokeWidth(currentDifficulty.equals("EASY") ? 0 : 2);
+        easyButton.setTextColor(currentDifficulty.equals("EASY") ? 
+            ContextCompat.getColor(this, R.color.white) : 
+            ContextCompat.getColor(this, R.color.primary));
+
         mediumButton.setBackgroundTintList(currentDifficulty.equals("MEDIUM") ? 
-            ContextCompat.getColorStateList(this, R.color.primary_dark) :
-            null);
+            ContextCompat.getColorStateList(this, R.color.primary) : null);
+        mediumButton.setStrokeWidth(currentDifficulty.equals("MEDIUM") ? 0 : 2);
+        mediumButton.setTextColor(currentDifficulty.equals("MEDIUM") ? 
+            ContextCompat.getColor(this, R.color.white) : 
+            ContextCompat.getColor(this, R.color.primary));
+
         hardButton.setBackgroundTintList(currentDifficulty.equals("HARD") ? 
-            ContextCompat.getColorStateList(this, R.color.primary_dark) :
-            null);
+            ContextCompat.getColorStateList(this, R.color.primary) : null);
+        hardButton.setStrokeWidth(currentDifficulty.equals("HARD") ? 0 : 2);
+        hardButton.setTextColor(currentDifficulty.equals("HARD") ? 
+            ContextCompat.getColor(this, R.color.white) : 
+            ContextCompat.getColor(this, R.color.primary));
     }
 
     private void initializeGrid() {
@@ -127,8 +154,8 @@ public class MainActivity extends AppCompatActivity {
 
                 GradientDrawable shape = new GradientDrawable();
                 shape.setShape(GradientDrawable.RECTANGLE);
-                shape.setColor(ContextCompat.getColor(this, R.color.cell_background));
-                shape.setStroke(2 * dpToPx, ContextCompat.getColor(this, R.color.cell_border));
+                shape.setColor(ContextCompat.getColor(this, R.color.white));
+                shape.setStroke(2 * dpToPx, ContextCompat.getColor(this, R.color.grid_border));
                 cell.setBackground(shape);
 
                 final int row = i;
@@ -139,17 +166,15 @@ public class MainActivity extends AppCompatActivity {
                 gridLayout.addView(cell);
             }
         }
-
-        updateClues();
     }
 
     private void addHeaderCell(String text) {
         TextView header = new TextView(this);
         header.setText(text);
-        header.setTextColor(ContextCompat.getColor(this, R.color.primary_dark));
+        header.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
         header.setTextSize(16);
         header.setPadding(16, 16, 16, 16);
-        header.setBackgroundColor(ContextCompat.getColor(this, R.color.primary_light));
+        header.setBackgroundColor(ContextCompat.getColor(this, R.color.grid_header));
         
         GridLayout.LayoutParams params = new GridLayout.LayoutParams();
         params.width = CELL_SIZE * (int) (getResources().getDisplayMetrics().density);
@@ -166,8 +191,8 @@ public class MainActivity extends AppCompatActivity {
         
         if (currentState.isEmpty()) {
             cell.setText("✓");
-            cell.setTextColor(ContextCompat.getColor(this, R.color.success));
-            cell.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.success_light));
+            cell.setTextColor(ContextCompat.getColor(this, R.color.button_green));
+            cell.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.level_background));
         } else if (currentState.equals("✓")) {
             cell.setText("✗");
             cell.setTextColor(ContextCompat.getColor(this, R.color.error));
@@ -195,12 +220,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateClues() {
         cluesList.removeAllViews();
-        for (String clue : currentClues) {
+        String[] currentClueSet = getCurrentClues();
+        
+        for (String clue : currentClueSet) {
             TextView clueView = new TextView(this);
             clueView.setText(clue);
             clueView.setTextSize(16);
             clueView.setPadding(16, 12, 16, 12);
-            clueView.setBackgroundColor(ContextCompat.getColor(this, R.color.primary_light));
+            clueView.setTextColor(ContextCompat.getColor(this, R.color.clue_text));
+            clueView.setBackgroundColor(ContextCompat.getColor(this, R.color.grid_header));
+            
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -211,11 +240,27 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private String[] getCurrentClues() {
+        String[][] clueSet;
+        switch (currentDifficulty) {
+            case "MEDIUM":
+                clueSet = mediumClues;
+                break;
+            case "HARD":
+                clueSet = hardClues;
+                break;
+            default:
+                clueSet = easyClues;
+                break;
+        }
+        return clueSet[currentLevel - 1];
+    }
+
     private void checkSolution() {
         // This is a simplified check. In a real implementation, you would check against actual solutions
         boolean isCorrect = true;
         messageText.setText(isCorrect ? "Congratulations! Level completed!" : "Try again!");
         messageText.setTextColor(ContextCompat.getColor(this, 
-            isCorrect ? R.color.success : R.color.error));
+            isCorrect ? R.color.button_green : R.color.error));
     }
 }

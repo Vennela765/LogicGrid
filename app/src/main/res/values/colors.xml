@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#2196f3</color>
+    <color name="primary">#1A237E</color>
     <color name="primary_dark">#1a237e</color>
-    <color name="primary_light">#e3f2fd</color>
+    <color name="primary_light">#E8EAF6</color>
     <color name="accent">#4caf50</color>
     <color name="accent_dark">#2e7d32</color>
     <color name="error">#f44336</color>
@@ -12,6 +12,16 @@
     <color name="cell_border">#1a237e</color>
     <color name="cell_selected">#2196f3</color>
     <color name="cell_background">@android:color/white</color>
-    <color name="text_primary">#ffffff</color>
+    <color name="text_primary">#1A237E</color>
     <color name="text_secondary">#e0e0e0</color>
+    <color name="background">#F0F2F5</color>
+    <color name="button_blue">#2196F3</color>
+    <color name="button_green">#4CAF50</color>
+    <color name="grid_header">#E3F2FD</color>
+    <color name="grid_border">#1A237E</color>
+    <color name="clue_background">#424242</color>
+    <color name="clue_text">#E3F2FD</color>
+    <color name="white">#FFFFFF</color>
+    <color name="level_background">#E3F2FD</color>
+    <color name="level_text">#1565C0</color>
 </resources>
