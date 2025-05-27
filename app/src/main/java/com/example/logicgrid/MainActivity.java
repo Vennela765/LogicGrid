@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat;
 import android.graphics.drawable.GradientDrawable;
 import android.view.animation.AnimationUtils;
 import com.google.android.material.button.MaterialButton;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     private GridLayout gridLayout;
@@ -28,32 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int GRID_SIZE = 3;
     private static final int CELL_SIZE = 85;
     private static final int CELL_MARGIN = 2;
-
-    private String[][] categories = {
-        {"Bird", "Cat", "Dog"},
-        {"Brown", "White", "Pink"}
-    };
-
-    private String[][] easyClues = {
-        {"Bird is associated with Pink", "Dog corresponds to Brown", 
-         "Dog doesn't match with White", "Cat is not associated with Brown"},
-        {"Cat matches with Pink", "Bird corresponds to White", 
-         "Dog is paired with Brown", "Cat is not matched with White"}
-    };
-
-    private String[][] mediumClues = {
-        {"Bird matches with White", "Cat corresponds to Pink", 
-         "Dog is paired with Brown", "Bird is not matched with Pink"},
-        {"Dog is associated with Brown", "Cat matches with White", 
-         "Bird corresponds to Pink", "Dog is not paired with White"}
-    };
-
-    private String[][] hardClues = {
-        {"Cat matches with Pink", "Dog is not associated with Pink", 
-         "Bird corresponds to White", "Dog matches with Brown"},
-        {"Bird is paired with Pink", "Cat corresponds to White", 
-         "Dog matches with Brown", "Bird is not associated with Brown"}
-    };
+    private GameLogic gameLogic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +39,7 @@ public class MainActivity extends AppCompatActivity {
         initializeViews();
         setupDifficultyButtons();
         setupActionButtons();
-        initializeGrid();
-        loadLevel(currentLevel);
+        initializeGame();
     }
 
     private void initializeViews() {
@@ -90,17 +65,30 @@ public class MainActivity extends AppCompatActivity {
     private void setupActionButtons() {
         newPuzzleButton.setOnClickListener(v -> {
             currentLevel = (currentLevel % 2) + 1;
-            loadLevel(currentLevel);
+            initializeGame();
         });
 
         checkButton.setOnClickListener(v -> checkSolution());
+    }
+
+    private void initializeGame() {
+        GameLogic.PuzzleData puzzleData = GameLogic.generatePuzzle(currentDifficulty, currentLevel);
+        if (puzzleData == null) {
+            Toast.makeText(this, "No puzzle available for this difficulty and level", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        gameLogic = new GameLogic(GRID_SIZE, puzzleData.categories, puzzleData.clues, puzzleData.solution);
+        levelText.setText("Level: " + currentDifficulty + " - Puzzle " + currentLevel);
+        initializeGrid();
+        updateClues();
     }
 
     private void setDifficulty(String difficulty) {
         currentDifficulty = difficulty;
         currentLevel = 1;
         updateDifficultyButtons();
-        loadLevel(currentLevel);
+        initializeGame();
     }
 
     private void updateDifficultyButtons() {
@@ -131,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
         gridLayout.setColumnCount(GRID_SIZE + 1);
         gridLayout.setRowCount(GRID_SIZE + 1);
 
+        String[][] categories = gameLogic.getCategories();
         int dpToPx = (int) (getResources().getDisplayMetrics().density);
 
         // Add empty top-left cell
@@ -188,42 +177,37 @@ public class MainActivity extends AppCompatActivity {
 
     private void toggleCell(int row, int col) {
         Button cell = cells[row][col];
-        String currentState = cell.getText().toString();
+        boolean isValid = gameLogic.toggleCell(row, col);
         
-        if (currentState.isEmpty()) {
-            cell.setText("✓");
-            cell.setTextColor(ContextCompat.getColor(this, R.color.button_green));
-            cell.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.level_background));
-        } else if (currentState.equals("✓")) {
-            cell.setText("✗");
-            cell.setTextColor(ContextCompat.getColor(this, R.color.error));
-            cell.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.error_light));
-        } else {
-            cell.setText("");
-            cell.setBackgroundTintList(null);
+        int state = gameLogic.getCellState(row, col);
+        switch (state) {
+            case GameLogic.YES:
+                cell.setText("✓");
+                cell.setTextColor(ContextCompat.getColor(this, R.color.button_green));
+                cell.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.level_background));
+                break;
+            case GameLogic.NO:
+                cell.setText("✗");
+                cell.setTextColor(ContextCompat.getColor(this, R.color.error));
+                cell.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.error_light));
+                break;
+            default:
+                cell.setText("");
+                cell.setBackgroundTintList(null);
+                break;
         }
-    }
 
-    private void loadLevel(int level) {
-        levelText.setText("Level: " + currentDifficulty + " - Puzzle " + level);
-        resetGrid();
-        updateClues();
-    }
-
-    private void resetGrid() {
-        for (int i = 0; i < GRID_SIZE; i++) {
-            for (int j = 0; j < GRID_SIZE; j++) {
-                cells[i][j].setText("");
-                cells[i][j].setBackgroundTintList(null);
-            }
+        if (!isValid) {
+            cell.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.shake));
+            Toast.makeText(this, "Invalid move!", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void updateClues() {
         cluesList.removeAllViews();
-        String[] currentClueSet = getCurrentClues();
+        String[] clues = gameLogic.getClues();
         
-        for (String clue : currentClueSet) {
+        for (String clue : clues) {
             TextView clueView = new TextView(this);
             clueView.setText(clue);
             clueView.setTextSize(16);
@@ -241,27 +225,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private String[] getCurrentClues() {
-        String[][] clueSet;
-        switch (currentDifficulty) {
-            case "MEDIUM":
-                clueSet = mediumClues;
-                break;
-            case "HARD":
-                clueSet = hardClues;
-                break;
-            default:
-                clueSet = easyClues;
-                break;
-        }
-        return clueSet[currentLevel - 1];
-    }
-
     private void checkSolution() {
-        // This is a simplified check. In a real implementation, you would check against actual solutions
-        boolean isCorrect = true;
+        if (!gameLogic.isComplete()) {
+            Toast.makeText(this, "Complete the puzzle first!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        boolean isCorrect = gameLogic.checkSolution();
         messageText.setText(isCorrect ? "Congratulations! Level completed!" : "Try again!");
         messageText.setTextColor(ContextCompat.getColor(this, 
             isCorrect ? R.color.button_green : R.color.error));
+
+        if (isCorrect) {
+            // Automatically move to next level or difficulty
+            if (currentLevel == 2) {
+                if (currentDifficulty.equals("EASY")) {
+                    setDifficulty("MEDIUM");
+                } else if (currentDifficulty.equals("MEDIUM")) {
+                    setDifficulty("HARD");
+                }
+            } else {
+                currentLevel++;
+                initializeGame();
+            }
+        }
     }
 }
