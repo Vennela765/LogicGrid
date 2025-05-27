@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat;
 import android.graphics.drawable.GradientDrawable;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.view.animation.AnimationUtils;
 
 public class MainActivity extends AppCompatActivity {
     private GridLayout gridLayout;
@@ -38,7 +39,10 @@ public class MainActivity extends AppCompatActivity {
         initializeGrid();
         loadLevel(currentLevel);
 
-        checkButton.setOnClickListener(v -> checkSolution());
+        checkButton.setOnClickListener(v -> {
+            v.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
+            checkSolution();
+        });
     }
 
     private void initializeGrid() {
@@ -59,13 +63,17 @@ public class MainActivity extends AppCompatActivity {
 
                 GradientDrawable shape = new GradientDrawable();
                 shape.setShape(GradientDrawable.RECTANGLE);
-                shape.setColor(ContextCompat.getColor(this, android.R.color.white));
-                shape.setStroke(2 * dpToPx, ContextCompat.getColor(this, android.R.color.black));
+                shape.setColor(ContextCompat.getColor(this, R.color.cell_background));
+                shape.setStroke(2 * dpToPx, ContextCompat.getColor(this, R.color.cell_border));
+                shape.setCornerRadius(4 * dpToPx);
                 cell.setBackground(shape);
 
                 final int row = i;
                 final int col = j;
-                cell.setOnClickListener(v -> toggleCell(row, col));
+                cell.setOnClickListener(v -> {
+                    v.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
+                    toggleCell(row, col);
+                });
 
                 cells[i][j] = cell;
                 gridLayout.addView(cell);
@@ -79,16 +87,17 @@ public class MainActivity extends AppCompatActivity {
         
         GradientDrawable shape = new GradientDrawable();
         shape.setShape(GradientDrawable.RECTANGLE);
-        shape.setStroke(2, ContextCompat.getColor(this, android.R.color.black));
+        shape.setCornerRadius(4 * getResources().getDisplayMetrics().density);
+        shape.setStroke(2, ContextCompat.getColor(this, R.color.cell_border));
         
         if (isSelected) {
-            shape.setColor(ContextCompat.getColor(this, android.R.color.white));
+            shape.setColor(ContextCompat.getColor(this, R.color.cell_background));
             cell.setText("");
             cell.setTag(false);
         } else {
-            shape.setColor(ContextCompat.getColor(this, android.R.color.holo_blue_light));
+            shape.setColor(ContextCompat.getColor(this, R.color.cell_selected));
             cell.setText("✓");
-            cell.setTextColor(ContextCompat.getColor(this, android.R.color.white));
+            cell.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
             cell.setTextSize(24);
             cell.setTag(true);
         }
@@ -101,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
         int[] rowCounts = new int[GRID_SIZE];
         int[] colCounts = new int[GRID_SIZE];
 
-        // Count selected cells in each row and column
         for (int i = 0; i < GRID_SIZE; i++) {
             for (int j = 0; j < GRID_SIZE; j++) {
                 if (cells[i][j].getTag() != null && (boolean) cells[i][j].getTag()) {
@@ -111,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // Check if any row or column has more than one selection
         for (int i = 0; i < GRID_SIZE; i++) {
             if (rowCounts[i] > 1 || colCounts[i] > 1) {
                 isValid = false;
@@ -121,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (!isValid) {
             messageText.setText("Only one selection allowed per row and column");
-            messageText.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_light));
+            messageText.setTextColor(ContextCompat.getColor(this, R.color.error));
         } else {
             messageText.setText("");
         }
@@ -138,13 +145,13 @@ public class MainActivity extends AppCompatActivity {
                 cells[i][j].setText("");
                 GradientDrawable shape = new GradientDrawable();
                 shape.setShape(GradientDrawable.RECTANGLE);
-                shape.setColor(ContextCompat.getColor(this, android.R.color.white));
-                shape.setStroke(2, ContextCompat.getColor(this, android.R.color.black));
+                shape.setColor(ContextCompat.getColor(this, R.color.cell_background));
+                shape.setStroke(2, ContextCompat.getColor(this, R.color.cell_border));
+                shape.setCornerRadius(4 * getResources().getDisplayMetrics().density);
                 cells[i][j].setBackground(shape);
             }
         }
 
-        // Set solution for current level
         solution = getLevelSolution(level);
     }
 
@@ -204,32 +211,32 @@ public class MainActivity extends AppCompatActivity {
 
         if (correct) {
             messageText.setText("Congratulations! Level completed!");
-            messageText.setTextColor(ContextCompat.getColor(this, android.R.color.holo_green_light));
+            messageText.setTextColor(ContextCompat.getColor(this, R.color.success));
             
             if (currentLevel < 3) {
-                new AlertDialog.Builder(this)
-                    .setTitle("Level Complete!")
-                    .setMessage("Ready for the next level?")
-                    .setPositiveButton("Next Level", (dialog, which) -> {
-                        currentLevel++;
-                        loadLevel(currentLevel);
-                    })
-                    .setCancelable(false)
-                    .show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+                builder.setTitle("Level Complete!")
+                       .setMessage("Ready for the next level?")
+                       .setPositiveButton("Next Level", (dialog, which) -> {
+                           currentLevel++;
+                           loadLevel(currentLevel);
+                       })
+                       .setCancelable(false)
+                       .show();
             } else {
-                new AlertDialog.Builder(this)
-                    .setTitle("Congratulations!")
-                    .setMessage("You've completed all levels!")
-                    .setPositiveButton("Play Again", (dialog, which) -> {
-                        currentLevel = 1;
-                        loadLevel(currentLevel);
-                    })
-                    .setNegativeButton("Close", null)
-                    .show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+                builder.setTitle("Congratulations!")
+                       .setMessage("You've completed all levels!")
+                       .setPositiveButton("Play Again", (dialog, which) -> {
+                           currentLevel = 1;
+                           loadLevel(currentLevel);
+                       })
+                       .setNegativeButton("Close", null)
+                       .show();
             }
         } else {
             messageText.setText("Try again!");
-            messageText.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_light));
+            messageText.setTextColor(ContextCompat.getColor(this, R.color.error));
         }
     }
 }

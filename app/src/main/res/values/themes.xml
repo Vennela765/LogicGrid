@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.LogicGrid" parent="Theme.Material3.DayNight.NoActionBar">
@@ -5,5 +6,31 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
-    <style name="Theme.LogicGrid" parent="Base.Theme.LogicGrid" />
+    <style name="Theme.LogicGrid" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">#2196f3</item>
+        <item name="colorPrimaryVariant">#1a237e</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">#4caf50</item>
+        <item name="colorSecondaryVariant">#2e7d32</item>
+        <item name="colorOnSecondary">@android:color/white</item>
+        
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        
+        <!-- Background colors -->
+        <item name="android:windowBackground">@android:color/black</item>
+        
+        <!-- Button styles -->
+        <item name="materialButtonStyle">@style/Widget.LogicGrid.Button</item>
+    </style>
+
+    <style name="Widget.LogicGrid.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:textSize">16sp</item>
+        <item name="android:padding">12dp</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="elevation">4dp</item>
+    </style>
 </resources>

@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="primary">#2196f3</color>
+    <color name="primary_dark">#1a237e</color>
+    <color name="primary_light">#e3f2fd</color>
+    <color name="accent">#4caf50</color>
+    <color name="accent_dark">#2e7d32</color>
+    <color name="error">#f44336</color>
+    <color name="error_light">#ffebee</color>
+    <color name="success">#4caf50</color>
+    <color name="success_light">#e8f5e9</color>
+    <color name="cell_border">#1a237e</color>
+    <color name="cell_selected">#2196f3</color>
+    <color name="cell_background">@android:color/white</color>
+    <color name="text_primary">#ffffff</color>
+    <color name="text_secondary">#e0e0e0</color>
 </resources>
