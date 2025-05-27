@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import android.graphics.drawable.GradientDrawable;
 import android.view.animation.AnimationUtils;
+import com.google.android.material.button.MaterialButton;
 
 public class MainActivity extends AppCompatActivity {
     private GridLayout gridLayout;
@@ -17,9 +18,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView messageText;
     private Button checkButton;
     private Button newPuzzleButton;
-    private Button easyButton;
-    private Button mediumButton;
-    private Button hardButton;
+    private MaterialButton easyButton;
+    private MaterialButton mediumButton;
+    private MaterialButton hardButton;
     private LinearLayout cluesList;
     private Button[][] cells;
     private int currentLevel = 1;
