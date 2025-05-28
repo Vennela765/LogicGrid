@@ -4,11 +4,11 @@ plugins {
 
 android {
     namespace "com.example.logicgrid"
-    compileSdkVersion 34  // Changed from 35 to 34 (latest stable version)
+    compileSdkVersion 34  // Make sure this is 34, not 35
     defaultConfig {
         applicationId "com.example.logicgrid"
         minSdk 26
-        targetSdkVersion 34  // Changed from 35 to 34
+        targetSdkVersion 34  // Make sure this is 34, not 35
         versionCode 1
         versionName "1.0"
 
