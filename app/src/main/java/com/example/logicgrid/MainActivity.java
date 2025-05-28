@@ -118,18 +118,22 @@ public class MainActivity extends AppCompatActivity {
         gridLayout.removeAllViews();
         gridLayout.setColumnCount(GRID_SIZE + 1);
         gridLayout.setRowCount(GRID_SIZE + 1);
-
+        gridLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.grid_background));
+        
+        // Add elevation to the grid
+        gridLayout.setElevation(8 * getResources().getDisplayMetrics().density);
+    
         String[][] categories = gameLogic.getCategories();
         int dpToPx = (int) (getResources().getDisplayMetrics().density);
-
+    
         // Add empty top-left cell
         addHeaderCell("");
-
+    
         // Add column headers
         for (int j = 0; j < GRID_SIZE; j++) {
             addHeaderCell(categories[1][j]);
         }
-
+    
         // Add row headers and grid cells
         for (int i = 0; i < GRID_SIZE; i++) {
             addHeaderCell(categories[0][i]);
@@ -141,17 +145,19 @@ public class MainActivity extends AppCompatActivity {
                 params.setMargins(CELL_MARGIN * dpToPx, CELL_MARGIN * dpToPx,
                                 CELL_MARGIN * dpToPx, CELL_MARGIN * dpToPx);
                 cell.setLayoutParams(params);
-
+    
                 GradientDrawable shape = new GradientDrawable();
                 shape.setShape(GradientDrawable.RECTANGLE);
-                shape.setColor(ContextCompat.getColor(this, R.color.white));
+                shape.setColor(ContextCompat.getColor(this, R.color.cell_empty));
                 shape.setStroke(2 * dpToPx, ContextCompat.getColor(this, R.color.grid_border));
+                shape.setCornerRadius(8 * dpToPx);
                 cell.setBackground(shape);
-
+                cell.setElevation(4 * dpToPx);
+    
                 final int row = i;
                 final int col = j;
                 cell.setOnClickListener(v -> toggleCell(row, col));
-
+    
                 cells[i][j] = cell;
                 gridLayout.addView(cell);
             }
@@ -161,16 +167,24 @@ public class MainActivity extends AppCompatActivity {
     private void addHeaderCell(String text) {
         TextView header = new TextView(this);
         header.setText(text);
-        header.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
+        header.setTextColor(ContextCompat.getColor(this, R.color.header_text));
         header.setTextSize(16);
         header.setPadding(16, 16, 16, 16);
-        header.setBackgroundColor(ContextCompat.getColor(this, R.color.grid_header));
+        header.setBackgroundColor(ContextCompat.getColor(this, R.color.header_background));
+        header.setGravity(android.view.Gravity.CENTER);
         
         GridLayout.LayoutParams params = new GridLayout.LayoutParams();
         params.width = CELL_SIZE * (int) (getResources().getDisplayMetrics().density);
         params.height = CELL_SIZE * (int) (getResources().getDisplayMetrics().density);
         params.setMargins(2, 2, 2, 2);
         header.setLayoutParams(params);
+        
+        // Add rounded corners to headers
+        GradientDrawable shape = new GradientDrawable();
+        shape.setShape(GradientDrawable.RECTANGLE);
+        shape.setColor(ContextCompat.getColor(this, R.color.header_background));
+        shape.setCornerRadius(8 * (int) (getResources().getDisplayMetrics().density));
+        header.setBackground(shape);
         
         gridLayout.addView(header);
     }
@@ -180,27 +194,32 @@ public class MainActivity extends AppCompatActivity {
         boolean isValid = gameLogic.toggleCell(row, col);
         
         int state = gameLogic.getCellState(row, col);
+        GradientDrawable shape = new GradientDrawable();
+        shape.setShape(GradientDrawable.RECTANGLE);
+        shape.setStroke(2 * (int) (getResources().getDisplayMetrics().density), 
+                       ContextCompat.getColor(this, R.color.grid_border));
+        shape.setCornerRadius(8 * (int) (getResources().getDisplayMetrics().density));
+        
         switch (state) {
             case GameLogic.YES:
                 cell.setText("✓");
                 cell.setTextColor(ContextCompat.getColor(this, R.color.button_green));
-                cell.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.level_background));
+                shape.setColor(ContextCompat.getColor(this, R.color.cell_yes));
                 break;
             case GameLogic.NO:
                 cell.setText("✗");
                 cell.setTextColor(ContextCompat.getColor(this, R.color.error));
-                cell.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.error_light));
+                shape.setColor(ContextCompat.getColor(this, R.color.cell_no));
                 break;
             default:
                 cell.setText("");
-                cell.setBackgroundTintList(null);
+                shape.setColor(ContextCompat.getColor(this, R.color.cell_empty));
                 break;
         }
-
+        
+        cell.setBackground(shape);
+    
         if (!isValid) {
-            // Replace this line:
-            // cell.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.shake));
-            // With this:
             cell.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake));
             Toast.makeText(this, "Invalid move!", Toast.LENGTH_SHORT).show();
         }
@@ -215,15 +234,22 @@ public class MainActivity extends AppCompatActivity {
             clueView.setText(clue);
             clueView.setTextSize(16);
             clueView.setPadding(16, 12, 16, 12);
-            clueView.setTextColor(ContextCompat.getColor(this, R.color.clue_text));
-            clueView.setBackgroundColor(ContextCompat.getColor(this, R.color.grid_header));
+            clueView.setTextColor(ContextCompat.getColor(this, R.color.clue_item_text));
+            
+            // Create rounded background for clue items
+            GradientDrawable shape = new GradientDrawable();
+            shape.setShape(GradientDrawable.RECTANGLE);
+            shape.setColor(ContextCompat.getColor(this, R.color.clue_item_background));
+            shape.setCornerRadius(8 * (int) (getResources().getDisplayMetrics().density));
+            clueView.setBackground(shape);
             
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             );
-            params.setMargins(0, 8, 0, 8);
+            params.setMargins(8, 8, 8, 8);
             clueView.setLayoutParams(params);
+            clueView.setElevation(2 * (int) (getResources().getDisplayMetrics().density));
             cluesList.addView(clueView);
         }
     }
