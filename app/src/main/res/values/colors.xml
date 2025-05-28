@@ -24,4 +24,12 @@
     <color name="white">#FFFFFF</color>
     <color name="level_background">#E3F2FD</color>
     <color name="level_text">#1565C0</color>
+    <color name="grid_background">#FFFFFF</color>
+    <color name="cell_empty">#FFFFFF</color>
+    <color name="cell_yes">#4CAF50</color>
+    <color name="cell_no">#F44336</color>
+    <color name="header_text">#1A237E</color>
+    <color name="header_background">#E3F2FD</color>
+    <color name="clue_item_text">#E3F2FD</color>
+    <color name="clue_item_background">#424242</color>
 </resources>
