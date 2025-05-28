@@ -229,27 +229,41 @@ public class MainActivity extends AppCompatActivity {
         cluesList.removeAllViews();
         String[] clues = gameLogic.getClues();
         
-        for (String clue : clues) {
+        for (int i = 0; i < clues.length; i++) {
             TextView clueView = new TextView(this);
-            clueView.setText(clue);
+            String clueNumber = (i + 1) + ". ";
+            clueView.setText(clueNumber + clues[i]);
             clueView.setTextSize(16);
-            clueView.setPadding(16, 12, 16, 12);
-            clueView.setTextColor(ContextCompat.getColor(this, R.color.clue_item_text));
+            clueView.setPadding(24, 16, 24, 16);
+            clueView.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
+            clueView.setLineSpacing(8, 1);
             
             // Create rounded background for clue items
             GradientDrawable shape = new GradientDrawable();
             shape.setShape(GradientDrawable.RECTANGLE);
             shape.setColor(ContextCompat.getColor(this, R.color.clue_item_background));
-            shape.setCornerRadius(8 * (int) (getResources().getDisplayMetrics().density));
+            shape.setCornerRadius(12 * getResources().getDisplayMetrics().density);
+            shape.setStroke(1, ContextCompat.getColor(this, R.color.primary_light));
             clueView.setBackground(shape);
+            
+            // Add elevation for a card-like effect
+            clueView.setElevation(4 * getResources().getDisplayMetrics().density);
             
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             );
-            params.setMargins(8, 8, 8, 8);
+            params.setMargins(16, 8, 16, 8);
             clueView.setLayoutParams(params);
-            clueView.setElevation(2 * (int) (getResources().getDisplayMetrics().density));
+            
+            // Add animation when clues appear
+            clueView.setAlpha(0f);
+            clueView.animate()
+                .alpha(1f)
+                .setDuration(300)
+                .setStartDelay(i * 100)
+                .start();
+            
             cluesList.addView(clueView);
         }
     }
