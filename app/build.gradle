@@ -4,11 +4,11 @@ plugins {
 
 android {
     namespace "com.example.logicgrid"
-    compileSdkVersion 35
+    compileSdkVersion 34  // Changed from 35 to 34 (latest stable version)
     defaultConfig {
         applicationId "com.example.logicgrid"
         minSdk 26
-        targetSdkVersion 35
+        targetSdkVersion 34  // Changed from 35 to 34
         versionCode 1
         versionName "1.0"
 
@@ -28,10 +28,10 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'com.google.android.material:material:1.12.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
+    implementation 'androidx.appcompat:appcompat:1.6.1'  // Updated to stable version
+    implementation 'com.google.android.material:material:1.11.0'  // Updated to stable version
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'  // Updated to stable version
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'  // Updated to stable version
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'  // Updated to stable version
 }
