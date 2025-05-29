@@ -11,27 +11,27 @@
     <color name="success_light">#e8f5e9</color>
     <color name="cell_border">#1a237e</color>
     <color name="cell_selected">#2196f3</color>
-    <color name="cell_background">@android:color/white</color>
+    <color name="cell_background">#F5F5F5</color>
     <color name="text_primary">#212121</color>
     <color name="text_secondary">#757575</color>
     <color name="background">#F0F2F5</color>
     <color name="button_blue">#2196F3</color>
     <color name="button_green">#4CAF50</color>
-    <color name="grid_header">#E3F2FD</color>
-    <color name="grid_border">#BDBDBD</color>
+    <color name="grid_header">#1976D2</color>
+    <color name="grid_border">#1565C0</color>
     <color name="clue_background">#F5F5F5</color>
     <color name="clue_text">#1A237E</color>
     <color name="white">#FFFFFF</color>
     <color name="level_background">#E3F2FD</color>
     <color name="level_text">#1565C0</color>
-    <color name="grid_background">#FFFFFF</color>
+    <color name="grid_background">#E3F2FD</color>
     <color name="cell_empty">#FFFFFF</color>
-    <color name="cell_yes">#E8F5E9</color>
-    <color name="cell_no">#FFEBEE</color>
-    <color name="header_text">#212121</color>
-    <color name="header_background">#F5F5F5</color>
+    <color name="cell_yes">#C8E6C9</color>
+    <color name="cell_no">#FFCDD2</color>
+    <color name="header_text">#FFFFFF</color>
+    <color name="header_background">#2196F3</color>
     <color name="clue_item_text">#1A237E</color>
-    <color name="clue_item_background">#F5F5F5</color>
+    <color name="clue_item_background">#E3F2FD</color>
     <color name="black">#000000</color>
 
     <!-- Level difficulty colors -->

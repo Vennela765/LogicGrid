@@ -9,11 +9,15 @@ import android.widget.LinearLayout;
 import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.appcompat.content.res.AppCompatResources;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Animatable;
 import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 import android.util.DisplayMetrics;
 import android.text.Layout;
+import android.os.Build;
 
 public class GameActivity extends AppCompatActivity {
     private GridLayout gridLayout;
@@ -155,7 +159,6 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private <T extends View> T createCell(String text, boolean isHeader) {
         int cellSizePx = calculateCellSize();
         int marginPx = (int) (CELL_MARGIN * density);
@@ -172,37 +175,31 @@ public class GameActivity extends AppCompatActivity {
 
         if (isHeader) {
             TextView header = new TextView(this);
-            
-            // Force fixed size and prevent any size changes
             header.setWidth(cellSizePx);
             header.setHeight(cellSizePx);
             header.setMinWidth(cellSizePx);
             header.setMinHeight(cellSizePx);
             header.setMaxWidth(cellSizePx);
             header.setMaxHeight(cellSizePx);
-            
-            // Center the text both horizontally and vertically
             header.setGravity(android.view.Gravity.CENTER);
-            
-            // Set text properties for consistent appearance
             header.setTextColor(ContextCompat.getColor(this, R.color.header_text));
             header.setIncludeFontPadding(false);
             header.setLineSpacing(0, 1.0f);
-            header.setTextSize(14); // Increased text size
-            
-            // Strict text constraints
+            header.setTextSize(14);
             header.setSingleLine(false);
             header.setLines(2);
             header.setMaxLines(2);
             header.setEllipsize(android.text.TextUtils.TruncateAt.END);
             
-            // Minimal padding to prevent text touching edges
             int paddingDp = 4;
             int paddingPx = (int) (paddingDp * density);
             header.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
             
-            header.setBreakStrategy(Layout.BREAK_STRATEGY_BALANCED);
-            header.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_FULL);
+            // Use SDK version check for LineBreaker
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                header.setBreakStrategy(Layout.BREAK_STRATEGY_BALANCED);
+                header.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_FULL);
+            }
             header.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_NONE);
             header.setText(text);
             
@@ -215,23 +212,35 @@ public class GameActivity extends AppCompatActivity {
             return (T) header;
         } else {
             Button cell = new Button(this);
-            
             cell.setWidth(cellSizePx);
             cell.setHeight(cellSizePx);
             cell.setMinWidth(cellSizePx);
             cell.setMinHeight(cellSizePx);
             cell.setMaxWidth(cellSizePx);
             cell.setMaxHeight(cellSizePx);
-            
             shape.setColor(ContextCompat.getColor(this, R.color.cell_empty));
             cell.setBackground(shape);
             cell.setLayoutParams(params);
             cell.setElevation(4 * density);
-            
             cell.setPadding(0, 0, 0, 0);
             cell.setIncludeFontPadding(false);
             cell.setGravity(android.view.Gravity.CENTER);
-            cell.setTextSize(16); // Increased text size for marks
+            cell.setTextSize(16);
+            
+            // Add animated star drawable to empty cells using AppCompatResources
+            try {
+                android.graphics.drawable.Drawable starDrawable = androidx.appcompat.content.res.AppCompatResources
+                    .getDrawable(this, R.drawable.star_animation);
+                if (starDrawable != null) {
+                    cell.setForeground(starDrawable);
+                    if (starDrawable instanceof android.graphics.drawable.Animatable) {
+                        ((android.graphics.drawable.Animatable) starDrawable).start();
+                    }
+                }
+            } catch (Exception e) {
+                // Fallback in case animation fails
+                cell.setForeground(null);
+            }
             
             gridLayout.addView(cell);
             return (T) cell;
@@ -253,15 +262,31 @@ public class GameActivity extends AppCompatActivity {
                 cell.setText("✓");
                 cell.setTextColor(ContextCompat.getColor(this, R.color.button_green));
                 shape.setColor(ContextCompat.getColor(this, R.color.cell_yes));
+                cell.setForeground(null);
                 break;
             case GameLogic.NO:
                 cell.setText("✗");
                 cell.setTextColor(ContextCompat.getColor(this, R.color.error));
                 shape.setColor(ContextCompat.getColor(this, R.color.cell_no));
+                cell.setForeground(null);
                 break;
             default:
                 cell.setText("");
                 shape.setColor(ContextCompat.getColor(this, R.color.cell_empty));
+                // Add animated star drawable using AppCompatResources
+                try {
+                    android.graphics.drawable.Drawable starDrawable = androidx.appcompat.content.res.AppCompatResources
+                        .getDrawable(this, R.drawable.star_animation);
+                    if (starDrawable != null) {
+                        cell.setForeground(starDrawable);
+                        if (starDrawable instanceof android.graphics.drawable.Animatable) {
+                            ((android.graphics.drawable.Animatable) starDrawable).start();
+                        }
+                    }
+                } catch (Exception e) {
+                    // Fallback in case animation fails
+                    cell.setForeground(null);
+                }
                 break;
         }
         
