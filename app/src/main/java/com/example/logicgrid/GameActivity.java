@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.TextView;
 import android.widget.LinearLayout;
+import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import android.graphics.drawable.GradientDrawable;
@@ -40,6 +41,7 @@ public class GameActivity extends AppCompatActivity {
 
         initializeViews();
         setupActionButtons();
+        setupBackButton();
         currentGridSize = GameLogic.getDifficultySize(currentDifficulty);
         initializeGame(seed);
     }
@@ -60,6 +62,11 @@ public class GameActivity extends AppCompatActivity {
         });
 
         checkButton.setOnClickListener(v -> checkSolution());
+    }
+
+    private void setupBackButton() {
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> finish());
     }
 
     private long generateSeed(String difficulty, int level) {
