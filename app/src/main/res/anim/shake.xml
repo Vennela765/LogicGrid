@@ -2,7 +2,6 @@
 <translate xmlns:android="http://schemas.android.com/apk/res/android"
     android:duration="100"
     android:fromXDelta="-5%"
-    android:interpolator="@android:anim/cycle_interpolator"
+    android:toXDelta="5%"
     android:repeatCount="2"
-    android:repeatMode="reverse"
-    android:toXDelta="5%" />
+    android:repeatMode="reverse" />
