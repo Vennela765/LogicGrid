@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import java.util.Random;
 
 public class LevelSelectActivity extends AppCompatActivity {
@@ -46,13 +47,13 @@ public class LevelSelectActivity extends AppCompatActivity {
         hardLevelsList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         // Set adapters with infinite levels
-        setupRecyclerView(easyLevelsList, "EASY", LEVELS_PER_DIFFICULTY);
-        setupRecyclerView(mediumLevelsList, "MEDIUM", LEVELS_PER_DIFFICULTY);
-        setupRecyclerView(hardLevelsList, "HARD", LEVELS_PER_DIFFICULTY);
+        setupRecyclerView(easyLevelsList, "EASY", LEVELS_PER_DIFFICULTY, R.color.easy_level);
+        setupRecyclerView(mediumLevelsList, "MEDIUM", LEVELS_PER_DIFFICULTY, R.color.medium_level);
+        setupRecyclerView(hardLevelsList, "HARD", LEVELS_PER_DIFFICULTY, R.color.hard_level);
     }
 
-    private void setupRecyclerView(RecyclerView recyclerView, String difficulty, int levelCount) {
-        recyclerView.setAdapter(new LevelAdapter(difficulty, levelCount, (diff, level) -> {
+    private void setupRecyclerView(RecyclerView recyclerView, String difficulty, int levelCount, int colorRes) {
+        recyclerView.setAdapter(new LevelAdapter(this, difficulty, levelCount, colorRes, (diff, level) -> {
             Intent intent = new Intent(this, GameActivity.class);
             intent.putExtra("difficulty", diff);
             intent.putExtra("level", level);
@@ -64,23 +65,31 @@ public class LevelSelectActivity extends AppCompatActivity {
     }
 
     private long generateSeed(String difficulty, int level) {
-        // Create a unique seed based on difficulty and level
-        return difficulty.hashCode() * 31L + level;
+        String seedString = difficulty + "_" + level;
+        long seed = 0;
+        for (char c : seedString.toCharArray()) {
+            seed = 31 * seed + c;
+        }
+        return seed;
     }
 
     private static class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.LevelViewHolder> {
         private final String difficulty;
         private final int levelCount;
         private final OnLevelSelectedListener listener;
+        private final int buttonColor;
+        private final AppCompatActivity activity;
 
         public interface OnLevelSelectedListener {
             void onLevelSelected(String difficulty, int level);
         }
 
-        LevelAdapter(String difficulty, int levelCount, OnLevelSelectedListener listener) {
+        LevelAdapter(AppCompatActivity activity, String difficulty, int levelCount, int colorRes, OnLevelSelectedListener listener) {
+            this.activity = activity;
             this.difficulty = difficulty;
             this.levelCount = levelCount;
             this.listener = listener;
+            this.buttonColor = ContextCompat.getColor(activity, colorRes);
         }
 
         @Override
@@ -94,6 +103,7 @@ public class LevelSelectActivity extends AppCompatActivity {
         public void onBindViewHolder(LevelViewHolder holder, int position) {
             int level = position + 1;
             holder.levelButton.setText(String.valueOf(level));
+            holder.levelButton.setBackgroundTintList(android.content.res.ColorStateList.valueOf(buttonColor));
             holder.levelButton.setOnClickListener(v -> listener.onLevelSelected(difficulty, level));
         }
 

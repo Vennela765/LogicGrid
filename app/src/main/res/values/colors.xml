@@ -33,4 +33,9 @@
     <color name="clue_item_text">#1A237E</color>
     <color name="clue_item_background">#FFFFFF</color>
     <color name="black">#000000</color>
+
+    <!-- Level difficulty colors -->
+    <color name="easy_level">#4CAF50</color>
+    <color name="medium_level">#FF9800</color>
+    <color name="hard_level">#F44336</color>
 </resources>
