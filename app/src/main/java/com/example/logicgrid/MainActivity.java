@@ -134,117 +134,81 @@ public class MainActivity extends AppCompatActivity {
         String[][] categories = gameLogic.getCategories();
         int dpToPx = (int) (getResources().getDisplayMetrics().density);
     
-        // Add empty top-left cell with special styling
-        TextView cornerCell = new TextView(this);
-        cornerCell.setBackgroundColor(ContextCompat.getColor(this, R.color.grid_background));
-        GridLayout.LayoutParams cornerParams = new GridLayout.LayoutParams();
-        cornerParams.width = (int) ((CELL_SIZE + 10) * dpToPx);
-        cornerParams.height = (int) ((CELL_SIZE + 10) * dpToPx);
-        cornerParams.setMargins(
-            CELL_MARGIN * dpToPx,
-            CELL_MARGIN * dpToPx,
-            CELL_MARGIN * dpToPx * 2, // Extra margin on the right
-            CELL_MARGIN * dpToPx * 2  // Extra margin on the bottom
-        );
-        cornerCell.setLayoutParams(cornerParams);
-        gridLayout.addView(cornerCell);
+        // Add empty top-left cell
+        createCell("", true);
     
-        // Add column headers with extra bottom margin
+        // Add column headers
         for (int j = 0; j < currentGridSize; j++) {
-            TextView header = createHeaderCell(categories[1][j]);
-            GridLayout.LayoutParams params = (GridLayout.LayoutParams) header.getLayoutParams();
-            params.setMargins(
-                CELL_MARGIN * dpToPx,
-                CELL_MARGIN * dpToPx,
-                CELL_MARGIN * dpToPx,
-                CELL_MARGIN * dpToPx * 2  // Extra margin at the bottom
-            );
-            header.setLayoutParams(params);
-            gridLayout.addView(header);
+            createCell(categories[1][j], true);
         }
     
         // Add row headers and grid cells
         for (int i = 0; i < currentGridSize; i++) {
-            // Add row header with extra right margin
-            TextView header = createHeaderCell(categories[0][i]);
-            GridLayout.LayoutParams params = (GridLayout.LayoutParams) header.getLayoutParams();
-            params.setMargins(
-                CELL_MARGIN * dpToPx,
-                CELL_MARGIN * dpToPx,
-                CELL_MARGIN * dpToPx * 2,  // Extra margin on the right
-                CELL_MARGIN * dpToPx
-            );
-            header.setLayoutParams(params);
-            gridLayout.addView(header);
+            // Add row header
+            createCell(categories[0][i], true);
             
             // Add grid cells
             for (int j = 0; j < currentGridSize; j++) {
-                Button cell = new Button(this);
-                GridLayout.LayoutParams cellParams = new GridLayout.LayoutParams();
-                cellParams.width = CELL_SIZE * dpToPx;
-                cellParams.height = CELL_SIZE * dpToPx;
-                cellParams.setMargins(
-                    CELL_MARGIN * dpToPx,
-                    CELL_MARGIN * dpToPx,
-                    CELL_MARGIN * dpToPx,
-                    CELL_MARGIN * dpToPx
-                );
-                cell.setLayoutParams(cellParams);
-    
-                GradientDrawable shape = new GradientDrawable();
-                shape.setShape(GradientDrawable.RECTANGLE);
-                shape.setColor(ContextCompat.getColor(this, R.color.cell_empty));
-                shape.setStroke(2 * dpToPx, ContextCompat.getColor(this, R.color.grid_border));
-                shape.setCornerRadius(8 * dpToPx);
-                cell.setBackground(shape);
-                cell.setElevation(4 * dpToPx);
-    
+                Button cell = createCell("", false);
                 final int row = i;
                 final int col = j;
                 cell.setOnClickListener(v -> toggleCell(row, col));
-    
                 cells[i][j] = cell;
-                gridLayout.addView(cell);
             }
         }
     }
 
-    private TextView createHeaderCell(String text) {
-        TextView header = new TextView(this);
-        header.setText(text);
-        header.setTextColor(ContextCompat.getColor(this, R.color.header_text));
-        header.setTextSize(14);
-        
-        int paddingDp = 12;
-        int paddingPx = (int) (paddingDp * getResources().getDisplayMetrics().density);
-        header.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
-        
-        header.setGravity(android.view.Gravity.CENTER);
-        header.setMaxLines(2);
-        header.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        
+    private <T extends View> T createCell(String text, boolean isHeader) {
+        int dpToPx = (int) getResources().getDisplayMetrics().density;
+        int cellSizePx = CELL_SIZE * dpToPx;
+        int marginPx = CELL_MARGIN * dpToPx;
+
         GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-        int cellSizePx = (int) ((CELL_SIZE + 10) * getResources().getDisplayMetrics().density);
         params.width = cellSizePx;
         params.height = cellSizePx;
-        
-        int marginPx = (int) (CELL_MARGIN * getResources().getDisplayMetrics().density);
         params.setMargins(marginPx, marginPx, marginPx, marginPx);
-        header.setLayoutParams(params);
-        
+
         GradientDrawable shape = new GradientDrawable();
         shape.setShape(GradientDrawable.RECTANGLE);
-        shape.setColor(ContextCompat.getColor(this, R.color.header_background));
-        shape.setCornerRadius(8 * getResources().getDisplayMetrics().density);
-        shape.setStroke(
-            (int) (1 * getResources().getDisplayMetrics().density),
-            ContextCompat.getColor(this, R.color.grid_border)
-        );
-        
-        header.setBackground(shape);
-        header.setElevation(2 * getResources().getDisplayMetrics().density);
-        
-        return header;
+        shape.setCornerRadius(8 * dpToPx);
+        shape.setStroke(dpToPx, ContextCompat.getColor(this, R.color.grid_border));
+
+        if (isHeader) {
+            TextView header = new TextView(this);
+            header.setText(text);
+            header.setTextColor(ContextCompat.getColor(this, R.color.header_text));
+            header.setTextSize(14);
+            header.setGravity(android.view.Gravity.CENTER);
+            header.setMaxLines(2);
+            header.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            
+            // Add padding inside the header
+            int paddingDp = 8;
+            int paddingPx = paddingDp * dpToPx;
+            header.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
+            
+            shape.setColor(ContextCompat.getColor(this, R.color.header_background));
+            header.setBackground(shape);
+            header.setLayoutParams(params);
+            header.setElevation(2 * dpToPx);
+            
+            gridLayout.addView(header);
+            return (T) header;
+        } else {
+            Button cell = new Button(this);
+            shape.setColor(ContextCompat.getColor(this, R.color.cell_empty));
+            cell.setBackground(shape);
+            cell.setLayoutParams(params);
+            cell.setElevation(4 * dpToPx);
+            cell.setPadding(0, 0, 0, 0); // Remove default button padding
+            cell.setMinHeight(0); // Remove default minimum height
+            cell.setMinWidth(0);  // Remove default minimum width
+            cell.setMinimumHeight(0); // Remove default minimum height
+            cell.setMinimumWidth(0);  // Remove default minimum width
+            
+            gridLayout.addView(cell);
+            return (T) cell;
+        }
     }
 
     private void toggleCell(int row, int col) {
