@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.widget.ImageButton;
 
 public class LevelSelectActivity extends AppCompatActivity {
+    private static final int LEVELS_PER_DIFFICULTY = 30;
     private RecyclerView easyLevelsList;
     private RecyclerView mediumLevelsList;
     private RecyclerView hardLevelsList;
@@ -38,10 +39,10 @@ public class LevelSelectActivity extends AppCompatActivity {
         mediumLevelsList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         hardLevelsList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
-        // Set adapters (implement these)
-        // easyLevelsList.setAdapter(new LevelAdapter(generateEasyLevels()));
-        // mediumLevelsList.setAdapter(new LevelAdapter(generateMediumLevels()));
-        // hardLevelsList.setAdapter(new LevelAdapter(generateHardLevels()));
+        // Set adapters with 30 levels each
+        setupRecyclerView(easyLevelsList, getString(R.string.difficulty_easy), LEVELS_PER_DIFFICULTY);
+        setupRecyclerView(mediumLevelsList, getString(R.string.difficulty_medium), LEVELS_PER_DIFFICULTY);
+        setupRecyclerView(hardLevelsList, getString(R.string.difficulty_hard), LEVELS_PER_DIFFICULTY);
     }
 
     private void setupRecyclerView(RecyclerView recyclerView, String difficulty, int levelCount) {
