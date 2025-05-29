@@ -64,22 +64,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="24dp"
                 android:text="@string/check_solution"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 app:backgroundTint="@color/button_green"
-                style="@style/Widget.MaterialComponents.Button"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/newPuzzleButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:text="@string/new_puzzle"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                app:backgroundTint="@color/primary"
                 style="@style/Widget.MaterialComponents.Button"/>
 
             <TextView

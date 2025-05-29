@@ -19,6 +19,13 @@ import android.widget.Toast;
 import android.util.DisplayMetrics;
 import android.text.Layout;
 import android.os.Build;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.view.Window;
+import android.view.WindowManager;
+import com.google.android.material.button.MaterialButton;
+import android.os.Handler;
+import android.app.Dialog;
 
 public class GameActivity extends AppCompatActivity {
     private GridLayout gridLayout;
@@ -58,16 +65,10 @@ public class GameActivity extends AppCompatActivity {
         levelText = findViewById(R.id.levelText);
         messageText = findViewById(R.id.messageText);
         checkButton = findViewById(R.id.checkButton);
-        newPuzzleButton = findViewById(R.id.newPuzzleButton);
         cluesList = findViewById(R.id.cluesList);
     }
 
     private void setupActionButtons() {
-        newPuzzleButton.setOnClickListener(v -> {
-            currentLevel = (currentLevel % LEVELS_PER_DIFFICULTY) + 1;
-            initializeGame(generateSeed(currentDifficulty, currentLevel));
-        });
-
         checkButton.setOnClickListener(v -> checkSolution());
     }
 
@@ -113,6 +114,9 @@ public class GameActivity extends AppCompatActivity {
             return;
         }
 
+        // Clear any previous completion message
+        messageText.setText("");
+        
         gameLogic = new GameLogic(currentGridSize, puzzleData.categories, puzzleData.clues, puzzleData.solution);
         levelText.setText(getString(R.string.level_format, currentDifficulty, currentLevel));
         cells = new Button[currentGridSize][currentGridSize];
@@ -397,18 +401,73 @@ public class GameActivity extends AppCompatActivity {
         }
 
         boolean isCorrect = gameLogic.checkSolution();
-        messageText.setText(getString(isCorrect ? R.string.congratulations : R.string.try_again));
-        messageText.setTextColor(ContextCompat.getColor(this, 
-            isCorrect ? R.color.button_green : R.color.error));
-
         if (isCorrect) {
-            // Automatically move to next level with its deterministic puzzle
-            currentLevel++;
-            if (currentLevel > LEVELS_PER_DIFFICULTY) {
-                currentLevel = 1;
-                Toast.makeText(this, getString(R.string.all_levels_completed), Toast.LENGTH_LONG).show();
-            }
-            initializeGame(generateSeed(currentDifficulty, currentLevel));
+            // First show success animation
+            messageText.setText(getString(R.string.congratulations));
+            messageText.setTextColor(ContextCompat.getColor(this, R.color.button_green));
+            messageText.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
+            
+            // Disable check button to prevent multiple clicks
+            checkButton.setEnabled(false);
+            
+            // Show completion popup with a slight delay for better UX
+            new Handler().postDelayed(() -> {
+                showLevelCompletePopup();
+            }, 1000); // 1 second delay
+        } else {
+            messageText.setText(getString(R.string.try_again));
+            messageText.setTextColor(ContextCompat.getColor(this, R.color.error));
+            messageText.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
         }
+    }
+
+    private void showLevelCompletePopup() {
+        // Create and show the dialog
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.level_complete_popup);
+        dialog.setCancelable(false); // Prevent dismissing by tapping outside
+        
+        // Set dialog window attributes
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, 
+                           WindowManager.LayoutParams.WRAP_CONTENT);
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            
+            // Add slide up animation for the dialog
+            window.setWindowAnimations(android.R.style.Animation_Dialog);
+        }
+
+        // Set level text
+        TextView levelTextView = dialog.findViewById(R.id.levelTextView);
+        levelTextView.setText(String.format("Level %d Completed!", currentLevel));
+
+        // Setup next puzzle button
+        MaterialButton nextPuzzleButton = dialog.findViewById(R.id.nextPuzzleButton);
+        nextPuzzleButton.setOnClickListener(v -> {
+            // Add click animation to the button
+            v.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));
+            
+            new Handler().postDelayed(() -> {
+                dialog.dismiss();
+                currentLevel++;
+                if (currentLevel > LEVELS_PER_DIFFICULTY) {
+                    currentLevel = 1;
+                    Toast.makeText(this, getString(R.string.all_levels_completed), 
+                                 Toast.LENGTH_LONG).show();
+                }
+                // Re-enable check button for the next level
+                checkButton.setEnabled(true);
+                // Clear the message text before initializing new game
+                messageText.setText("");
+                initializeGame(generateSeed(currentDifficulty, currentLevel));
+            }, 200); // Short delay for button animation
+        });
+
+        // Show dialog with animation
+        dialog.show();
+        View dialogView = dialog.findViewById(android.R.id.content);
+        dialogView.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
     }
 }
