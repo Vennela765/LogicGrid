@@ -123,31 +123,73 @@ public class MainActivity extends AppCompatActivity {
         gridLayout.setRowCount(currentGridSize + 1);
         gridLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.grid_background));
         
+        // Add padding to the entire grid
+        int gridPaddingDp = 8;
+        int gridPaddingPx = (int) (gridPaddingDp * getResources().getDisplayMetrics().density);
+        gridLayout.setPadding(gridPaddingPx, gridPaddingPx, gridPaddingPx, gridPaddingPx);
+        
         // Add elevation to the grid
         gridLayout.setElevation(8 * getResources().getDisplayMetrics().density);
     
         String[][] categories = gameLogic.getCategories();
         int dpToPx = (int) (getResources().getDisplayMetrics().density);
     
-        // Add empty top-left cell
-        addHeaderCell("");
+        // Add empty top-left cell with special styling
+        TextView cornerCell = new TextView(this);
+        cornerCell.setBackgroundColor(ContextCompat.getColor(this, R.color.grid_background));
+        GridLayout.LayoutParams cornerParams = new GridLayout.LayoutParams();
+        cornerParams.width = (int) ((CELL_SIZE + 10) * dpToPx);
+        cornerParams.height = (int) ((CELL_SIZE + 10) * dpToPx);
+        cornerParams.setMargins(
+            CELL_MARGIN * dpToPx,
+            CELL_MARGIN * dpToPx,
+            CELL_MARGIN * dpToPx * 2, // Extra margin on the right
+            CELL_MARGIN * dpToPx * 2  // Extra margin on the bottom
+        );
+        cornerCell.setLayoutParams(cornerParams);
+        gridLayout.addView(cornerCell);
     
-        // Add column headers
+        // Add column headers with extra bottom margin
         for (int j = 0; j < currentGridSize; j++) {
-            addHeaderCell(categories[1][j]);
+            TextView header = createHeaderCell(categories[1][j]);
+            GridLayout.LayoutParams params = (GridLayout.LayoutParams) header.getLayoutParams();
+            params.setMargins(
+                CELL_MARGIN * dpToPx,
+                CELL_MARGIN * dpToPx,
+                CELL_MARGIN * dpToPx,
+                CELL_MARGIN * dpToPx * 2  // Extra margin at the bottom
+            );
+            header.setLayoutParams(params);
+            gridLayout.addView(header);
         }
     
         // Add row headers and grid cells
         for (int i = 0; i < currentGridSize; i++) {
-            addHeaderCell(categories[0][i]);
+            // Add row header with extra right margin
+            TextView header = createHeaderCell(categories[0][i]);
+            GridLayout.LayoutParams params = (GridLayout.LayoutParams) header.getLayoutParams();
+            params.setMargins(
+                CELL_MARGIN * dpToPx,
+                CELL_MARGIN * dpToPx,
+                CELL_MARGIN * dpToPx * 2,  // Extra margin on the right
+                CELL_MARGIN * dpToPx
+            );
+            header.setLayoutParams(params);
+            gridLayout.addView(header);
+            
+            // Add grid cells
             for (int j = 0; j < currentGridSize; j++) {
                 Button cell = new Button(this);
-                GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-                params.width = CELL_SIZE * dpToPx;
-                params.height = CELL_SIZE * dpToPx;
-                params.setMargins(CELL_MARGIN * dpToPx, CELL_MARGIN * dpToPx,
-                                CELL_MARGIN * dpToPx, CELL_MARGIN * dpToPx);
-                cell.setLayoutParams(params);
+                GridLayout.LayoutParams cellParams = new GridLayout.LayoutParams();
+                cellParams.width = CELL_SIZE * dpToPx;
+                cellParams.height = CELL_SIZE * dpToPx;
+                cellParams.setMargins(
+                    CELL_MARGIN * dpToPx,
+                    CELL_MARGIN * dpToPx,
+                    CELL_MARGIN * dpToPx,
+                    CELL_MARGIN * dpToPx
+                );
+                cell.setLayoutParams(cellParams);
     
                 GradientDrawable shape = new GradientDrawable();
                 shape.setShape(GradientDrawable.RECTANGLE);
@@ -167,29 +209,42 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void addHeaderCell(String text) {
+    private TextView createHeaderCell(String text) {
         TextView header = new TextView(this);
         header.setText(text);
         header.setTextColor(ContextCompat.getColor(this, R.color.header_text));
-        header.setTextSize(16);
-        header.setPadding(16, 16, 16, 16);
-        header.setBackgroundColor(ContextCompat.getColor(this, R.color.header_background));
+        header.setTextSize(14);
+        
+        int paddingDp = 12;
+        int paddingPx = (int) (paddingDp * getResources().getDisplayMetrics().density);
+        header.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
+        
         header.setGravity(android.view.Gravity.CENTER);
+        header.setMaxLines(2);
+        header.setEllipsize(android.text.TextUtils.TruncateAt.END);
         
         GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-        params.width = CELL_SIZE * (int) (getResources().getDisplayMetrics().density);
-        params.height = CELL_SIZE * (int) (getResources().getDisplayMetrics().density);
-        params.setMargins(2, 2, 2, 2);
+        int cellSizePx = (int) ((CELL_SIZE + 10) * getResources().getDisplayMetrics().density);
+        params.width = cellSizePx;
+        params.height = cellSizePx;
+        
+        int marginPx = (int) (CELL_MARGIN * getResources().getDisplayMetrics().density);
+        params.setMargins(marginPx, marginPx, marginPx, marginPx);
         header.setLayoutParams(params);
         
-        // Add rounded corners to headers
         GradientDrawable shape = new GradientDrawable();
         shape.setShape(GradientDrawable.RECTANGLE);
         shape.setColor(ContextCompat.getColor(this, R.color.header_background));
-        shape.setCornerRadius(8 * (int) (getResources().getDisplayMetrics().density));
-        header.setBackground(shape);
+        shape.setCornerRadius(8 * getResources().getDisplayMetrics().density);
+        shape.setStroke(
+            (int) (1 * getResources().getDisplayMetrics().density),
+            ContextCompat.getColor(this, R.color.grid_border)
+        );
         
-        gridLayout.addView(header);
+        header.setBackground(shape);
+        header.setElevation(2 * getResources().getDisplayMetrics().density);
+        
+        return header;
     }
 
     private void toggleCell(int row, int col) {
