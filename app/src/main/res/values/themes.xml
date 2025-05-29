@@ -13,6 +13,11 @@
         <item name="android:windowBackground">@color/background</item>
     </style>
 
+    <style name="Theme.LogicGrid.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
     <style name="Widget.LogicGrid.Button" parent="Widget.MaterialComponents.Button">
         <item name="android:textSize">16sp</item>
         <item name="android:padding">12dp</item>

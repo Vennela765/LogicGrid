@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    
+    <!-- Background circle -->
+    <path
+        android:fillColor="@color/primary"
+        android:pathData="M100,100m-100,0a100,100 0,1 1,200 0a100,100 0,1 1,-200 0"/>
+    
+    <!-- Grid lines -->
+    <path
+        android:strokeColor="@color/white"
+        android:strokeWidth="8"
+        android:pathData="M50,50h100v100h-100z"/>
+    
+    <path
+        android:strokeColor="@color/white"
+        android:strokeWidth="4"
+        android:pathData="M83.33,50v100M116.67,50v100M50,83.33h100M50,116.67h100"/>
+        
+    <!-- Checkmark -->
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M75,100l15,15l35,-35"/>
+</vector> 

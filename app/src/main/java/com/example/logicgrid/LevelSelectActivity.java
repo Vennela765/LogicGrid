@@ -10,26 +10,38 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import android.widget.ImageButton;
 
 public class LevelSelectActivity extends AppCompatActivity {
-    private RecyclerView easyLevelsRecyclerView;
-    private RecyclerView mediumLevelsRecyclerView;
-    private RecyclerView hardLevelsRecyclerView;
+    private RecyclerView easyLevelsList;
+    private RecyclerView mediumLevelsList;
+    private RecyclerView hardLevelsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_level_select);
 
-        // Initialize RecyclerViews
-        easyLevelsRecyclerView = findViewById(R.id.easyLevelsRecyclerView);
-        mediumLevelsRecyclerView = findViewById(R.id.mediumLevelsRecyclerView);
-        hardLevelsRecyclerView = findViewById(R.id.hardLevelsRecyclerView);
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> onBackPressed());
 
-        // Set up RecyclerViews
-        setupRecyclerView(easyLevelsRecyclerView, "EASY", 6);
-        setupRecyclerView(mediumLevelsRecyclerView, "MEDIUM", 6);
-        setupRecyclerView(hardLevelsRecyclerView, "HARD", 6);
+        setupRecyclerViews();
+    }
+
+    private void setupRecyclerViews() {
+        easyLevelsList = findViewById(R.id.easyLevelsList);
+        mediumLevelsList = findViewById(R.id.mediumLevelsList);
+        hardLevelsList = findViewById(R.id.hardLevelsList);
+
+        // Set layout managers
+        easyLevelsList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        mediumLevelsList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        hardLevelsList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
+        // Set adapters (implement these)
+        // easyLevelsList.setAdapter(new LevelAdapter(generateEasyLevels()));
+        // mediumLevelsList.setAdapter(new LevelAdapter(generateMediumLevels()));
+        // hardLevelsList.setAdapter(new LevelAdapter(generateHardLevels()));
     }
 
     private void setupRecyclerView(RecyclerView recyclerView, String difficulty, int levelCount) {

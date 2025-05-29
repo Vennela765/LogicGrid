@@ -14,4 +14,8 @@
     <string name="clues_title">Clues:</string>
     <string name="level_number">Level %d</string>
     <string name="back">Back</string>
+    <string name="how_to_play">How to Play</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="how_to_play_instructions">Logic Grid Puzzles are solved by using the given clues to fill in a grid with ✓ (yes) and ✗ (no) marks.\n\n1. Each clue gives you information about relationships between items.\n\n2. Click a cell to cycle through ✓, ✗, and empty.\n\n3. Use logic to determine which combinations are possible and which are not.\n\n4. Each item in a category can only match with one item from each other category.\n\n5. Complete the puzzle by filling all cells correctly!</string>
 </resources>
