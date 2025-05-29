@@ -175,17 +175,44 @@ public class MainActivity extends AppCompatActivity {
 
         if (isHeader) {
             TextView header = new TextView(this);
-            header.setText(text);
-            header.setTextColor(ContextCompat.getColor(this, R.color.header_text));
-            header.setTextSize(14);
+            
+            // Force fixed size and prevent any size changes
+            header.setWidth(cellSizePx);
+            header.setHeight(cellSizePx);
+            header.setMinWidth(cellSizePx);
+            header.setMinHeight(cellSizePx);
+            header.setMaxWidth(cellSizePx);
+            header.setMaxHeight(cellSizePx);
+            
+            // Center the text both horizontally and vertically
             header.setGravity(android.view.Gravity.CENTER);
+            
+            // Set text properties for consistent appearance
+            header.setTextColor(ContextCompat.getColor(this, R.color.header_text));
+            header.setIncludeFontPadding(false); // Remove extra font padding
+            header.setLineSpacing(0, 1.0f); // Remove extra line spacing
+            header.setTextSize(11); // Even smaller text size
+            
+            // Strict text constraints
+            header.setSingleLine(false); // Allow multiple lines
+            header.setLines(2); // Force exactly 2 lines
             header.setMaxLines(2);
             header.setEllipsize(android.text.TextUtils.TruncateAt.END);
             
-            // Add padding inside the header
-            int paddingDp = 8;
+            // Minimal padding to prevent text touching edges
+            int paddingDp = 2;
             int paddingPx = paddingDp * dpToPx;
             header.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
+            
+            // Advanced text layout settings
+            header.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_BALANCED);
+            header.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_FULL);
+            
+            // Prevent any text scaling
+            header.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_NONE);
+            
+            // Set the text after configuring the TextView
+            header.setText(text);
             
             shape.setColor(ContextCompat.getColor(this, R.color.header_background));
             header.setBackground(shape);
@@ -196,15 +223,29 @@ public class MainActivity extends AppCompatActivity {
             return (T) header;
         } else {
             Button cell = new Button(this);
+            
+            // Force fixed size and prevent any size changes
+            cell.setWidth(cellSizePx);
+            cell.setHeight(cellSizePx);
+            cell.setMinWidth(cellSizePx);
+            cell.setMinHeight(cellSizePx);
+            cell.setMaxWidth(cellSizePx);
+            cell.setMaxHeight(cellSizePx);
+            
             shape.setColor(ContextCompat.getColor(this, R.color.cell_empty));
             cell.setBackground(shape);
             cell.setLayoutParams(params);
             cell.setElevation(4 * dpToPx);
-            cell.setPadding(0, 0, 0, 0); // Remove default button padding
-            cell.setMinHeight(0); // Remove default minimum height
-            cell.setMinWidth(0);  // Remove default minimum width
-            cell.setMinimumHeight(0); // Remove default minimum height
-            cell.setMinimumWidth(0);  // Remove default minimum width
+            
+            // Remove all padding and size constraints
+            cell.setPadding(0, 0, 0, 0);
+            cell.setIncludeFontPadding(false);
+            
+            // Center any text that might be added
+            cell.setGravity(android.view.Gravity.CENTER);
+            
+            // Set text size to match headers
+            cell.setTextSize(11);
             
             gridLayout.addView(cell);
             return (T) cell;
