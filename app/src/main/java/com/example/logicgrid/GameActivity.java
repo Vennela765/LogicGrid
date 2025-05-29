@@ -7,6 +7,7 @@ import android.widget.GridLayout;
 import android.widget.TextView;
 import android.widget.LinearLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView.ScaleType;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -135,22 +136,22 @@ public class GameActivity extends AppCompatActivity {
     
         String[][] categories = gameLogic.getCategories();
     
-        // Add empty top-left cell
-        createCell("", true);
+        // Add empty top-left cell with star
+        createCell("", true, true);
     
         // Add column headers
         for (int j = 0; j < currentGridSize; j++) {
-            createCell(categories[1][j], true);
+            createCell(categories[1][j], true, false);
         }
     
         // Add row headers and grid cells
         for (int i = 0; i < currentGridSize; i++) {
             // Add row header
-            createCell(categories[0][i], true);
+            createCell(categories[0][i], true, false);
             
             // Add grid cells
             for (int j = 0; j < currentGridSize; j++) {
-                Button cell = createCell("", false);
+                Button cell = createCell("", false, false);
                 final int row = i;
                 final int col = j;
                 cell.setOnClickListener(v -> toggleCell(row, col));
@@ -159,7 +160,8 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    private <T extends View> T createCell(String text, boolean isHeader) {
+    @SuppressWarnings("unchecked")
+    private <T extends View> T createCell(String text, boolean isHeader, boolean isTopLeft) {
         int cellSizePx = calculateCellSize();
         int marginPx = (int) (CELL_MARGIN * density);
 
@@ -174,42 +176,90 @@ public class GameActivity extends AppCompatActivity {
         shape.setStroke((int) density, ContextCompat.getColor(this, R.color.grid_border));
 
         if (isHeader) {
-            TextView header = new TextView(this);
-            header.setWidth(cellSizePx);
-            header.setHeight(cellSizePx);
-            header.setMinWidth(cellSizePx);
-            header.setMinHeight(cellSizePx);
-            header.setMaxWidth(cellSizePx);
-            header.setMaxHeight(cellSizePx);
-            header.setGravity(android.view.Gravity.CENTER);
-            header.setTextColor(ContextCompat.getColor(this, R.color.header_text));
-            header.setIncludeFontPadding(false);
-            header.setLineSpacing(0, 1.0f);
-            header.setTextSize(14);
-            header.setSingleLine(false);
-            header.setLines(2);
-            header.setMaxLines(2);
-            header.setEllipsize(android.text.TextUtils.TruncateAt.END);
-            
-            int paddingDp = 4;
-            int paddingPx = (int) (paddingDp * density);
-            header.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
-            
-            // Use SDK version check for LineBreaker
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                header.setBreakStrategy(Layout.BREAK_STRATEGY_BALANCED);
-                header.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_FULL);
+            if (isTopLeft) {
+                // Create a special ImageButton for the top-left cell to better handle the animated star
+                ImageButton starCell = new ImageButton(this);
+                
+                // Set exact same layout parameters as other cells
+                GridLayout.LayoutParams starParams = new GridLayout.LayoutParams(params);
+                starParams.width = cellSizePx;
+                starParams.height = cellSizePx;
+                starCell.setLayoutParams(starParams);
+                
+                // Set minimum dimensions
+                starCell.setMinimumWidth(cellSizePx);
+                starCell.setMinimumHeight(cellSizePx);
+                
+                starCell.setScaleType(ImageButton.ScaleType.FIT_CENTER);
+                
+                // Create border shape with the same style as other cells
+                GradientDrawable borderShape = new GradientDrawable();
+                borderShape.setShape(GradientDrawable.RECTANGLE);
+                borderShape.setColor(ContextCompat.getColor(this, R.color.cell_empty));
+                borderShape.setStroke((int) density, ContextCompat.getColor(this, R.color.grid_border));
+                borderShape.setCornerRadius(8 * density);
+                starCell.setBackground(borderShape);
+                
+                // Use same padding as other cells
+                int paddingPx = (int) (4 * density);
+                starCell.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
+                
+                try {
+                    // Load the animated drawable
+                    Drawable starDrawable = AppCompatResources.getDrawable(this, R.drawable.star_animation);
+                    if (starDrawable != null) {
+                        // Set the drawable and start animation
+                        starCell.setImageDrawable(starDrawable);
+                        // Scale the star to fit cell
+                        starCell.setScaleX(1.0f);
+                        starCell.setScaleY(1.0f);
+                        if (starDrawable instanceof Animatable) {
+                            ((Animatable) starDrawable).start();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                
+                gridLayout.addView(starCell);
+                return (T) starCell;
+            } else {
+                TextView header = new TextView(this);
+                header.setWidth(cellSizePx);
+                header.setHeight(cellSizePx);
+                header.setMinWidth(cellSizePx);
+                header.setMinHeight(cellSizePx);
+                header.setMaxWidth(cellSizePx);
+                header.setMaxHeight(cellSizePx);
+                header.setGravity(android.view.Gravity.CENTER);
+                header.setTextColor(ContextCompat.getColor(this, R.color.header_text));
+                header.setIncludeFontPadding(false);
+                header.setLineSpacing(0, 1.0f);
+                header.setTextSize(14);
+                header.setSingleLine(false);
+                header.setLines(2);
+                header.setMaxLines(2);
+                header.setEllipsize(android.text.TextUtils.TruncateAt.END);
+                
+                int paddingDp = 4;
+                int paddingPx = (int) (paddingDp * density);
+                header.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
+                
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                    header.setBreakStrategy(Layout.BREAK_STRATEGY_BALANCED);
+                    header.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_FULL);
+                }
+                header.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_NONE);
+                header.setText(text);
+                
+                shape.setColor(ContextCompat.getColor(this, R.color.header_background));
+                header.setBackground(shape);
+                header.setLayoutParams(params);
+                header.setElevation(2 * density);
+                
+                gridLayout.addView(header);
+                return (T) header;
             }
-            header.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_NONE);
-            header.setText(text);
-            
-            shape.setColor(ContextCompat.getColor(this, R.color.header_background));
-            header.setBackground(shape);
-            header.setLayoutParams(params);
-            header.setElevation(2 * density);
-            
-            gridLayout.addView(header);
-            return (T) header;
         } else {
             Button cell = new Button(this);
             cell.setWidth(cellSizePx);
