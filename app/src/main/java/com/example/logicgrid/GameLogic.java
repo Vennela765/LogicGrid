@@ -177,6 +177,40 @@ public class GameLogic {
                             {0, 0, 1}   // Carol - Cherry
                         }
                     );
+                case 5:
+                    return new PuzzleData(
+                        new String[][] {
+                            {"Math", "Science", "Art"},
+                            {"9AM", "10AM", "11AM"}
+                        },
+                        new String[] {
+                            "Math is not the last class",
+                            "Science is after Art",
+                            "The 10AM class involves numbers"
+                        },
+                        new int[][] {
+                            {0, 1, 0},  // Math - 10AM
+                            {0, 0, 1},  // Science - 11AM
+                            {1, 0, 0}   // Art - 9AM
+                        }
+                    );
+                case 6:
+                    return new PuzzleData(
+                        new String[][] {
+                            {"Hat", "Scarf", "Gloves"},
+                            {"Red", "Blue", "Green"}
+                        },
+                        new String[] {
+                            "The Hat matches the sky",
+                            "The Gloves are not Green",
+                            "The Red item goes around your neck"
+                        },
+                        new int[][] {
+                            {0, 1, 0},  // Hat - Blue
+                            {1, 0, 0},  // Scarf - Red
+                            {0, 0, 1}   // Gloves - Green
+                        }
+                    );
             }
         }
         
@@ -256,6 +290,44 @@ public class GameLogic {
                             {0, 0, 1},  // Coffee - Large
                             {0, 1, 0},  // Tea - Medium
                             {1, 0, 0}   // Juice - Small
+                        }
+                    );
+                case 5:
+                    return new PuzzleData(
+                        new String[][] {
+                            {"Soccer", "Tennis", "Chess"},
+                            {"Park", "Gym", "Club"}
+                        },
+                        new String[] {
+                            "The outdoor sport is played in the Park",
+                            "If Tennis is at the Club, Chess isn't at the Gym",
+                            "The mind sport is played indoors",
+                            "The Gym activity requires a net",
+                            "If Soccer is outdoors, then Tennis must be at the Gym"
+                        },
+                        new int[][] {
+                            {1, 0, 0},  // Soccer - Park
+                            {0, 1, 0},  // Tennis - Gym
+                            {0, 0, 1}   // Chess - Club
+                        }
+                    );
+                case 6:
+                    return new PuzzleData(
+                        new String[][] {
+                            {"Cake", "Bread", "Cookie"},
+                            {"Morning", "Noon", "Night"}
+                        },
+                        new String[] {
+                            "The sweet treats are made at opposite times of day",
+                            "If Bread is made at Noon, Cookie must be made in the Morning",
+                            "The Night baking isn't Bread",
+                            "The Morning item needs the least baking time",
+                            "If Cake is made at Night, then Bread can't be made in the Morning"
+                        },
+                        new int[][] {
+                            {0, 0, 1},  // Cake - Night
+                            {0, 1, 0},  // Bread - Noon
+                            {1, 0, 0}   // Cookie - Morning
                         }
                     );
             }
@@ -345,6 +417,50 @@ public class GameLogic {
                             {0, 0, 1},  // Mystery - Evening
                             {0, 1, 0},  // Romance - Afternoon
                             {1, 0, 0}   // Fantasy - Morning
+                        }
+                    );
+                case 5:
+                    return new PuzzleData(
+                        new String[][] {
+                            {"Violin", "Piano", "Flute"},
+                            {"Classical", "Jazz", "Folk"}
+                        },
+                        new String[] {
+                            "The Classical piece features a string instrument",
+                            "If Piano plays Jazz, then Flute must play Folk",
+                            "The instrument in Folk music is not the largest one",
+                            "If Violin isn't in Classical, then Piano must be in Folk",
+                            "The Jazz performance uses a percussion-capable instrument",
+                            "If the Flute plays Classical, then Violin can't play Folk",
+                            "The instrument in Jazz can play both melody and harmony",
+                            "The Folk music uses the most portable instrument"
+                        },
+                        new int[][] {
+                            {1, 0, 0},  // Violin - Classical
+                            {0, 1, 0},  // Piano - Jazz
+                            {0, 0, 1}   // Flute - Folk
+                        }
+                    );
+                case 6:
+                    return new PuzzleData(
+                        new String[][] {
+                            {"Painting", "Sculpture", "Photo"},
+                            {"Gallery", "Museum", "Studio"}
+                        },
+                        new String[] {
+                            "The Museum piece is three-dimensional",
+                            "If the Painting is in the Gallery, then the Photo isn't in the Studio",
+                            "The Studio work was created with modern technology",
+                            "If the Sculpture isn't in the Museum, then the Painting must be in the Studio",
+                            "The Gallery piece can be reproduced easily",
+                            "The oldest art form is not displayed in the newest venue",
+                            "If the Photo is in the Gallery, then the Sculpture must be in the Museum",
+                            "The Studio doesn't display traditional art forms"
+                        },
+                        new int[][] {
+                            {0, 0, 1},  // Painting - Studio
+                            {0, 1, 0},  // Sculpture - Museum
+                            {1, 0, 0}   // Photo - Gallery
                         }
                     );
             }

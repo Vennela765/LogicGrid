@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupActionButtons() {
         newPuzzleButton.setOnClickListener(v -> {
-            currentLevel = (currentLevel % 2) + 1;
+            currentLevel = (currentLevel % 6) + 1;
             initializeGame();
         });
 
