@@ -25,7 +25,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Select Level"
+            android:text="@string/select_level"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:layout_marginStart="16dp"/>
@@ -34,7 +34,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -45,7 +46,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Easy"
+                android:text="@string/difficulty_easy"
                 android:textColor="@color/primary"
                 android:textSize="24sp"
                 android:textStyle="bold"
@@ -63,7 +64,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Medium"
+                android:text="@string/difficulty_medium"
                 android:textColor="@color/primary"
                 android:textSize="24sp"
                 android:textStyle="bold"
@@ -81,7 +82,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hard"
+                android:text="@string/difficulty_hard"
                 android:textColor="@color/primary"
                 android:textSize="24sp"
                 android:textStyle="bold"
@@ -93,6 +94,7 @@
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 android:paddingVertical="8dp"
+                android:layout_marginBottom="16dp"
                 android:nestedScrollingEnabled="false"/>
 
         </LinearLayout>

@@ -14,27 +14,28 @@
 
         <ImageButton
             android:id="@+id/backButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@drawable/ic_back"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Back"
-            android:padding="8dp"
-            android:tint="@color/white" />
+            android:contentDescription="@string/back"
+            android:padding="12dp"
+            app:tint="@color/white" />
 
         <TextView
             android:id="@+id/levelText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:textColor="@color/white"
-            android:textSize="20sp"
-            android:layout_marginStart="16dp"/>
+            android:textSize="20sp"/>
 
     </androidx.appcompat.widget.Toolbar>
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -42,72 +43,54 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Status Message -->
             <TextView
                 android:id="@+id/messageText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:textSize="16sp"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginBottom="16dp"
+                android:textSize="18sp"
+                android:textColor="@color/text_primary"/>
 
-            <!-- Game Grid Container -->
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp">
-
-                <!-- Game Grid Card -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="4dp">
-
-                    <GridLayout
-                        android:id="@+id/gridLayout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="8dp"/>
-
-                </androidx.cardview.widget.CardView>
-
-            </FrameLayout>
-
-            <!-- Action Buttons -->
-            <LinearLayout
+            <GridLayout
+                android:id="@+id/gridLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:orientation="horizontal"
-                android:layout_marginBottom="24dp">
+                android:layout_marginBottom="16dp"/>
 
-                <Button
-                    android:id="@+id/newPuzzleButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Next Level"
-                    android:layout_marginEnd="16dp"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/checkButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/check_solution"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:backgroundTint="@color/button_green"
+                style="@style/Widget.MaterialComponents.Button"/>
 
-                <Button
-                    android:id="@+id/checkButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Check Solution"
-                    android:backgroundTint="@color/button_green"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/newPuzzleButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:text="@string/new_puzzle"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:backgroundTint="@color/primary"
+                style="@style/Widget.MaterialComponents.Button"/>
 
-            </LinearLayout>
-
-            <!-- Clues Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Clues"
-                android:textColor="@color/primary"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/clues_title"
+                android:textColor="@color/text_primary"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp"/>
+                android:textStyle="bold"/>
 
             <LinearLayout
                 android:id="@+id/cluesList"

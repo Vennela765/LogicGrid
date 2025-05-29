@@ -47,22 +47,28 @@ public class LevelSelectActivity extends AppCompatActivity {
         mediumLevelsList.setLayoutManager(new GridLayoutManager(this, COLUMNS));
         hardLevelsList.setLayoutManager(new GridLayoutManager(this, COLUMNS));
 
-        // Set adapters with infinite levels
+        // Set fixed size to true for better performance
+        easyLevelsList.setHasFixedSize(true);
+        mediumLevelsList.setHasFixedSize(true);
+        hardLevelsList.setHasFixedSize(true);
+
         setupRecyclerView(easyLevelsList, "EASY", LEVELS_PER_DIFFICULTY, R.color.easy_level);
         setupRecyclerView(mediumLevelsList, "MEDIUM", LEVELS_PER_DIFFICULTY, R.color.medium_level);
         setupRecyclerView(hardLevelsList, "HARD", LEVELS_PER_DIFFICULTY, R.color.hard_level);
     }
 
     private void setupRecyclerView(RecyclerView recyclerView, String difficulty, int levelCount, int colorRes) {
-        recyclerView.setAdapter(new LevelAdapter(this, difficulty, levelCount, colorRes, (diff, level) -> {
+        LevelAdapter adapter = new LevelAdapter(this, difficulty, levelCount, colorRes, (diff, level) -> {
             Intent intent = new Intent(this, GameActivity.class);
             intent.putExtra("difficulty", diff);
             intent.putExtra("level", level);
-            // Add random seed based on difficulty and level
             long seed = generateSeed(diff, level);
             intent.putExtra("seed", seed);
             startActivity(intent);
-        }));
+        });
+        recyclerView.setAdapter(adapter);
+        // Force the adapter to show all items
+        adapter.notifyDataSetChanged();
     }
 
     private long generateSeed(String difficulty, int level) {
@@ -117,7 +123,10 @@ public class LevelSelectActivity extends AppCompatActivity {
             
             holder.levelButton.setText(levelText);
             holder.levelButton.setBackgroundTintList(android.content.res.ColorStateList.valueOf(buttonColor));
-            holder.levelButton.setOnClickListener(v -> listener.onLevelSelected(difficulty, level));
+            
+            // Set click listener with final position
+            final int finalLevel = level;
+            holder.levelButton.setOnClickListener(v -> listener.onLevelSelected(difficulty, finalLevel));
         }
 
         @Override
