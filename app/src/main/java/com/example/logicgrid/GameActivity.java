@@ -30,21 +30,23 @@ public class GameActivity extends AppCompatActivity {
     private static final int CELL_MARGIN = 2;
     private GameLogic gameLogic;
     private int currentGridSize;
+    private static final int LEVELS_PER_DIFFICULTY = 100; // Match with LevelSelectActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        // Get difficulty and level from intent
+        // Get difficulty, level and seed from intent
         currentDifficulty = getIntent().getStringExtra("difficulty");
         currentLevel = getIntent().getIntExtra("level", 1);
+        long seed = getIntent().getLongExtra("seed", currentLevel); // Get seed or use level as fallback
 
         initializeViews();
         setupDifficultyButtons();
         setupActionButtons();
         currentGridSize = GameLogic.getDifficultySize(currentDifficulty);
-        initializeGame();
+        initializeGame(seed);
     }
 
     private void initializeViews() {
@@ -68,8 +70,10 @@ public class GameActivity extends AppCompatActivity {
 
     private void setupActionButtons() {
         newPuzzleButton.setOnClickListener(v -> {
-            currentLevel = (currentLevel % 6) + 1;
-            initializeGame();
+            currentLevel = (currentLevel % LEVELS_PER_DIFFICULTY) + 1;
+            // Generate new seed for new puzzle
+            long newSeed = System.currentTimeMillis();
+            initializeGame(newSeed);
         });
 
         checkButton.setOnClickListener(v -> checkSolution());
@@ -81,7 +85,9 @@ public class GameActivity extends AppCompatActivity {
         currentGridSize = GameLogic.getDifficultySize(difficulty);
         cells = new Button[currentGridSize][currentGridSize];
         updateDifficultyButtons();
-        initializeGame();
+        // Generate new seed when changing difficulty
+        long newSeed = System.currentTimeMillis();
+        initializeGame(newSeed);
     }
 
     private void updateDifficultyButtons() {
@@ -107,10 +113,10 @@ public class GameActivity extends AppCompatActivity {
             ContextCompat.getColor(this, R.color.primary));
     }
 
-    private void initializeGame() {
-        GameLogic.PuzzleData puzzleData = GameLogic.generatePuzzle(currentDifficulty, currentLevel);
+    private void initializeGame(long seed) {
+        GameLogic.PuzzleData puzzleData = GameLogic.generatePuzzle(currentDifficulty, seed);
         if (puzzleData == null) {
-            Toast.makeText(this, "No puzzle available for this difficulty and level", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error generating puzzle", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -348,20 +354,24 @@ public class GameActivity extends AppCompatActivity {
             isCorrect ? R.color.button_green : R.color.error));
 
         if (isCorrect) {
-            // Automatically move to next level or difficulty
-            if (currentLevel == 6) {
-                if (currentDifficulty.equals("EASY")) {
-                    setDifficulty("MEDIUM");
-                } else if (currentDifficulty.equals("MEDIUM")) {
-                    setDifficulty("HARD");
-                } else {
-                    // Completed all levels
-                    Toast.makeText(this, "Congratulations! You've completed all levels!", Toast.LENGTH_LONG).show();
-                    finish();
+            // Automatically move to next level
+            currentLevel++;
+            if (currentLevel > LEVELS_PER_DIFFICULTY) {
+                currentLevel = 1;
+                switch (currentDifficulty) {
+                    case "EASY":
+                        setDifficulty("MEDIUM");
+                        break;
+                    case "MEDIUM":
+                        setDifficulty("HARD");
+                        break;
+                    case "HARD":
+                        // Start over from level 1 of HARD
+                        initializeGame(System.currentTimeMillis());
+                        break;
                 }
             } else {
-                currentLevel++;
-                initializeGame();
+                initializeGame(System.currentTimeMillis());
             }
         }
     }
