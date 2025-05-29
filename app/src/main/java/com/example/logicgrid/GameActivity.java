@@ -162,6 +162,7 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private <T extends View> T createCell(String text, boolean isHeader) {
         int dpToPx = (int) getResources().getDisplayMetrics().density;
         int cellSizePx = CELL_SIZE * dpToPx;
@@ -364,4 +365,4 @@ public class GameActivity extends AppCompatActivity {
             }
         }
     }
-} 
+}
