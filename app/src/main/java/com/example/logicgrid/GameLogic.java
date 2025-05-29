@@ -105,7 +105,22 @@ public class GameLogic {
         }
     }
 
+    public static int getDifficultySize(String difficulty) {
+        switch (difficulty) {
+            case "EASY":
+                return 3;
+            case "MEDIUM":
+                return 4;
+            case "HARD":
+                return 5;
+            default:
+                return 3;
+        }
+    }
+
     public static PuzzleData generatePuzzle(String difficulty, int level) {
+        int size = getDifficultySize(difficulty);
+        
         // EASY LEVELS - Focus on direct relationships and simple deductions
         if (difficulty.equals("EASY")) {
             switch (level) {
@@ -214,155 +229,162 @@ public class GameLogic {
             }
         }
         
-        // MEDIUM LEVELS - Introduce conditional logic and multiple-step deductions
+        // MEDIUM LEVELS - 4x4 grid with conditional logic and multiple-step deductions
         if (difficulty.equals("MEDIUM")) {
             switch (level) {
                 case 1:
                     return new PuzzleData(
                         new String[][] {
-                            {"Teacher", "Doctor", "Engineer"},
-                            {"Morning", "Afternoon", "Evening"}
+                            {"Math", "Science", "History", "Art"},
+                            {"Monday", "Tuesday", "Wednesday", "Thursday"}
                         },
                         new String[] {
-                            "If the Doctor works in the Morning, the Engineer works in the Evening",
-                            "The Teacher doesn't work in the Afternoon",
-                            "The person working in the Morning isn't the Engineer",
-                            "The Doctor prefers later shifts than the Teacher"
+                            "Math is not on Thursday",
+                            "Science is taught after History",
+                            "Art is not on consecutive days with Math",
+                            "History is not on Wednesday",
+                            "The Tuesday class involves calculations"
                         },
                         new int[][] {
-                            {1, 0, 0},  // Teacher - Morning
-                            {0, 0, 1},  // Doctor - Evening
-                            {0, 1, 0}   // Engineer - Afternoon
+                            {0, 1, 0, 0},  // Math - Tuesday
+                            {0, 0, 1, 0},  // Science - Wednesday
+                            {1, 0, 0, 0},  // History - Monday
+                            {0, 0, 0, 1}   // Art - Thursday
                         }
                     );
                 case 2:
                     return new PuzzleData(
                         new String[][] {
-                            {"Piano", "Guitar", "Drums"},
-                            {"Jazz", "Rock", "Blues"}
+                            {"Dog", "Cat", "Bird", "Fish"},
+                            {"Park", "Home", "Garden", "Shop"}
                         },
                         new String[] {
-                            "The Piano isn't used in Rock music",
-                            "If Guitar plays Blues, then Drums must play Rock",
-                            "The Jazz instrument has strings",
-                            "The Rock instrument is the loudest",
-                            "Blues isn't played on Piano"
+                            "The Dog is either at the Park or Garden",
+                            "The Cat stays indoors",
+                            "The Fish is at the Shop",
+                            "The Bird is not in the Garden",
+                            "If the Dog is at the Park, the Bird is at Home"
                         },
                         new int[][] {
-                            {1, 0, 0},  // Piano - Jazz
-                            {0, 0, 1},  // Guitar - Blues
-                            {0, 1, 0}   // Drums - Rock
+                            {1, 0, 0, 0},  // Dog - Park
+                            {0, 1, 0, 0},  // Cat - Home
+                            {0, 0, 0, 1},  // Bird - Shop
+                            {0, 0, 1, 0}   // Fish - Garden
                         }
                     );
                 case 3:
                     return new PuzzleData(
                         new String[][] {
-                            {"Gold", "Silver", "Bronze"},
-                            {"Running", "Swimming", "Cycling"}
+                            {"Piano", "Guitar", "Drums", "Bass", "Violin"},
+                            {"Jazz", "Rock", "Blues", "Classical", "Folk"}
                         },
                         new String[] {
-                            "The Silver medal wasn't won in Running",
-                            "If Gold was won in Swimming, Bronze wasn't in Cycling",
-                            "The Running medal is more valuable than the Cycling one",
-                            "The Swimming medal isn't Bronze",
-                            "If Silver wasn't won in Swimming, then Gold was won in Running"
+                            "The Piano is featured in Jazz music",
+                            "Rock music needs both Guitar and Drums",
+                            "The Bass provides foundation in Blues",
+                            "Classical music prominently features the Violin",
+                            "Folk music uses stringed instruments",
+                            "The Guitar isn't used in Classical music",
+                            "The Drums create rhythm in energetic genres",
+                            "String instruments are versatile across genres"
                         },
                         new int[][] {
-                            {1, 0, 0},  // Gold - Running
-                            {0, 1, 0},  // Silver - Swimming
-                            {0, 0, 1}   // Bronze - Cycling
+                            {1, 0, 0, 0, 0},  // Piano - Jazz
+                            {0, 1, 0, 0, 0},  // Guitar - Rock
+                            {0, 0, 1, 0, 0},  // Drums - Blues
+                            {0, 0, 0, 1, 0},  // Bass - Classical
+                            {0, 0, 0, 0, 1}   // Violin - Folk
                         }
                     );
                 case 4:
                     return new PuzzleData(
                         new String[][] {
-                            {"Coffee", "Tea", "Juice"},
-                            {"Small", "Medium", "Large"}
+                            {"Coffee", "Tea", "Juice", "Milk"},
+                            {"Small", "Medium", "Large", "Extra Large"}
                         },
                         new String[] {
                             "The largest drink contains caffeine",
                             "If Tea is Medium, then Juice must be Small",
                             "Coffee isn't served in the smallest size",
                             "The Medium drink isn't as sweet as the Small one",
-                            "If Coffee is Large, then Tea can't be Small"
+                            "If Coffee is Large, then Tea can't be Small",
+                            "The Extra Large drink is not milk"
                         },
                         new int[][] {
-                            {0, 0, 1},  // Coffee - Large
-                            {0, 1, 0},  // Tea - Medium
-                            {1, 0, 0}   // Juice - Small
+                            {0, 0, 0, 1},  // Coffee - Large
+                            {0, 0, 1, 0},  // Tea - Medium
+                            {0, 1, 0, 0},  // Juice - Small
+                            {1, 0, 0, 0}   // Milk - Extra Large
                         }
                     );
                 case 5:
                     return new PuzzleData(
                         new String[][] {
-                            {"Soccer", "Tennis", "Chess"},
-                            {"Park", "Gym", "Club"}
+                            {"Soccer", "Tennis", "Chess", "Basketball", "Volleyball"},
+                            {"Park", "Gym", "Club", "Beach", "Stadium"}
                         },
                         new String[] {
                             "The outdoor sport is played in the Park",
                             "If Tennis is at the Club, Chess isn't at the Gym",
                             "The mind sport is played indoors",
                             "The Gym activity requires a net",
-                            "If Soccer is outdoors, then Tennis must be at the Gym"
+                            "If Soccer is outdoors, then Tennis must be at the Gym",
+                            "The Beach activity is not played in the Stadium",
+                            "The Volleyball activity is not played in the Park"
                         },
                         new int[][] {
-                            {1, 0, 0},  // Soccer - Park
-                            {0, 1, 0},  // Tennis - Gym
-                            {0, 0, 1}   // Chess - Club
+                            {1, 0, 0, 0, 0},  // Soccer - Park
+                            {0, 1, 0, 0, 0},  // Tennis - Gym
+                            {0, 0, 1, 0, 0},  // Chess - Club
+                            {0, 0, 0, 1, 0},  // Basketball - Beach
+                            {0, 0, 0, 0, 1}   // Volleyball - Stadium
                         }
                     );
                 case 6:
                     return new PuzzleData(
                         new String[][] {
-                            {"Cake", "Bread", "Cookie"},
-                            {"Morning", "Noon", "Night"}
+                            {"Cake", "Bread", "Cookie", "Pastry", "Pie"},
+                            {"Morning", "Noon", "Night", "Afternoon", "Evening"}
                         },
                         new String[] {
                             "The sweet treats are made at opposite times of day",
                             "If Bread is made at Noon, Cookie must be made in the Morning",
                             "The Night baking isn't Bread",
                             "The Morning item needs the least baking time",
-                            "If Cake is made at Night, then Bread can't be made in the Morning"
+                            "If Cake is made at Night, then Bread can't be made in the Morning",
+                            "The Afternoon baking isn't Bread",
+                            "The Pastry is not made in the Morning"
                         },
                         new int[][] {
-                            {0, 0, 1},  // Cake - Night
-                            {0, 1, 0},  // Bread - Noon
-                            {1, 0, 0}   // Cookie - Morning
+                            {0, 0, 0, 1, 0},  // Cake - Night
+                            {0, 0, 1, 0, 0},  // Bread - Noon
+                            {0, 1, 0, 0, 0},  // Cookie - Morning
+                            {1, 0, 0, 0, 0},  // Pastry - Afternoon
+                            {0, 0, 0, 0, 1}   // Pie - Evening
                         }
                     );
             }
         }
         
-        // HARD LEVELS - Complex logical relationships and multi-step deductions
+        // HARD LEVELS - 5x5 grid with complex logical relationships
         if (difficulty.equals("HARD")) {
             switch (level) {
                 case 1:
                     return new PuzzleData(
                         new String[][] {
-                            {"Python", "Java", "Ruby"},
-                            {"Web", "Mobile", "Data"}
+                            {"Python", "Java", "Ruby", "C++", "Go"},
+                            {"Web", "Mobile", "Data", "Game", "Cloud"},
+                            {"London", "Paris", "Rome", "Berlin", "Tokyo"}
                         },
                         new String[] {
-                            "If Python is used for Web, then Java isn't used for Mobile",
-                            "The Data project doesn't use Ruby",
-                            "If Java is used for Data, then Python must be used for Web",
-                            "The Mobile project uses an object-oriented language",
-                            "If Ruby isn't used for Web, then Python isn't used for Data",
-                            "The Web project uses a scripting language"
-                        },
-                        new int[][] {
-                            {1, 0, 0},  // Python - Web
-                            {0, 1, 0},  // Java - Mobile
-                            {0, 0, 1}   // Ruby - Data
-                        }
-                    );
-                case 2:
-                    return new PuzzleData(
-                        new String[][] {
-                            {"London", "Paris", "Rome"},
-                            {"Spring", "Summer", "Winter"}
-                        },
-                        new String[] {
+                            "Python is used in either Web or Data projects",
+                            "Java is perfect for Mobile development",
+                            "Ruby isn't used for Game development",
+                            "C++ is used where performance matters most",
+                            "Go is designed for Cloud applications",
+                            "The Web project uses a scripting language",
+                            "The Game project needs high performance",
+                            "The Data project uses an interpreted language",
                             "The city visited in Winter is further north than the one visited in Summer",
                             "If Paris is visited in Spring, then Rome must be visited in Summer",
                             "London isn't visited in the warmest season",
@@ -371,18 +393,34 @@ public class GameLogic {
                             "The Summer destination is known for its ancient history"
                         },
                         new int[][] {
-                            {0, 1, 0},  // London - Summer
-                            {0, 0, 1},  // Paris - Winter
-                            {1, 0, 0}   // Rome - Spring
+                            {1, 0, 0, 0, 0},  // Python - Web
+                            {0, 1, 0, 0, 0},  // Java - Mobile
+                            {0, 0, 1, 0, 0},  // Ruby - Data
+                            {0, 0, 0, 1, 0},  // C++ - Game
+                            {0, 0, 0, 0, 1},  // Go - Cloud
+                            {0, 1, 0, 0, 0},  // London - Summer
+                            {0, 0, 0, 1, 0},  // Paris - Winter
+                            {1, 0, 0, 0, 0},  // Rome - Spring
+                            {0, 0, 1, 0, 0},  // Berlin - Autumn
+                            {0, 0, 0, 0, 1}   // Tokyo - Autumn
                         }
                     );
-                case 3:
+                case 2:
                     return new PuzzleData(
                         new String[][] {
-                            {"Chess", "Cards", "Dice"},
-                            {"Expert", "Amateur", "Beginner"}
+                            {"Piano", "Guitar", "Drums", "Bass", "Violin"},
+                            {"Jazz", "Rock", "Blues", "Classical", "Folk"},
+                            {"Expert", "Amateur", "Beginner", "Amateur", "Beginner"}
                         },
                         new String[] {
+                            "The Piano is featured in Jazz music",
+                            "Rock music needs both Guitar and Drums",
+                            "The Bass provides foundation in Blues",
+                            "Classical music prominently features the Violin",
+                            "Folk music uses stringed instruments",
+                            "The Guitar isn't used in Classical music",
+                            "The Drums create rhythm in energetic genres",
+                            "String instruments are versatile across genres",
                             "The Expert player prefers games of pure strategy",
                             "If the Amateur plays Cards, then the Beginner doesn't play Dice",
                             "The Dice player has more experience than the Cards player",
@@ -392,16 +430,23 @@ public class GameLogic {
                             "The Cards player isn't the most experienced"
                         },
                         new int[][] {
-                            {1, 0, 0},  // Chess - Expert
-                            {0, 0, 1},  // Cards - Beginner
-                            {0, 1, 0}   // Dice - Amateur
+                            {1, 0, 0, 0, 0},  // Piano - Jazz
+                            {0, 1, 0, 0, 0},  // Guitar - Rock
+                            {0, 0, 1, 0, 0},  // Drums - Blues
+                            {0, 0, 0, 1, 0},  // Bass - Classical
+                            {0, 0, 0, 0, 1},  // Violin - Folk
+                            {1, 0, 0, 0, 0},  // Expert - Expert
+                            {0, 1, 0, 0, 0},  // Amateur - Amateur
+                            {0, 0, 1, 0, 0},  // Beginner - Beginner
+                            {0, 0, 0, 1, 0},  // Amateur - Beginner
+                            {0, 0, 0, 0, 1}   // Beginner - Expert
                         }
                     );
-                case 4:
+                case 3:
                     return new PuzzleData(
                         new String[][] {
-                            {"Mystery", "Romance", "Fantasy"},
-                            {"Morning", "Afternoon", "Evening"}
+                            {"Mystery", "Romance", "Fantasy", "Thriller", "Horror"},
+                            {"Morning", "Afternoon", "Evening", "Night", "Midnight"}
                         },
                         new String[] {
                             "The Evening reading session isn't for light-hearted stories",
@@ -411,41 +456,24 @@ public class GameLogic {
                             "The Morning reader prefers plots with magical elements",
                             "The book read in the Afternoon has more dialogue than action",
                             "If Mystery isn't read in the Afternoon, then Fantasy must be read in the Morning",
-                            "The Evening reading requires the most concentration"
+                            "The Evening reading requires the most concentration",
+                            "The Thriller is not a horror story",
+                            "The Horror story is not a thriller"
                         },
                         new int[][] {
-                            {0, 0, 1},  // Mystery - Evening
-                            {0, 1, 0},  // Romance - Afternoon
-                            {1, 0, 0}   // Fantasy - Morning
+                            {0, 0, 0, 1, 0},  // Mystery - Evening
+                            {0, 0, 1, 0, 0},  // Romance - Afternoon
+                            {0, 1, 0, 0, 0},  // Fantasy - Morning
+                            {1, 0, 0, 0, 0},  // Thriller - Morning
+                            {0, 0, 0, 0, 1}   // Horror - Midnight
                         }
                     );
-                case 5:
+                case 4:
                     return new PuzzleData(
                         new String[][] {
-                            {"Violin", "Piano", "Flute"},
-                            {"Classical", "Jazz", "Folk"}
-                        },
-                        new String[] {
-                            "The Classical piece features a string instrument",
-                            "If Piano plays Jazz, then Flute must play Folk",
-                            "The instrument in Folk music is not the largest one",
-                            "If Violin isn't in Classical, then Piano must be in Folk",
-                            "The Jazz performance uses a percussion-capable instrument",
-                            "If the Flute plays Classical, then Violin can't play Folk",
-                            "The instrument in Jazz can play both melody and harmony",
-                            "The Folk music uses the most portable instrument"
-                        },
-                        new int[][] {
-                            {1, 0, 0},  // Violin - Classical
-                            {0, 1, 0},  // Piano - Jazz
-                            {0, 0, 1}   // Flute - Folk
-                        }
-                    );
-                case 6:
-                    return new PuzzleData(
-                        new String[][] {
-                            {"Painting", "Sculpture", "Photo"},
-                            {"Gallery", "Museum", "Studio"}
+                            {"Painting", "Sculpture", "Photo", "Drawing", "Print"},
+                            {"Gallery", "Museum", "Studio", "Beach", "Street"},
+                            {"Morning", "Noon", "Night", "Afternoon", "Evening"}
                         },
                         new String[] {
                             "The Museum piece is three-dimensional",
@@ -455,12 +483,58 @@ public class GameLogic {
                             "The Gallery piece can be reproduced easily",
                             "The oldest art form is not displayed in the newest venue",
                             "If the Photo is in the Gallery, then the Sculpture must be in the Museum",
-                            "The Studio doesn't display traditional art forms"
+                            "The Studio doesn't display traditional art forms",
+                            "The Morning item needs the least baking time",
+                            "The Afternoon baking isn't Bread",
+                            "The Night baking isn't Bread"
                         },
                         new int[][] {
-                            {0, 0, 1},  // Painting - Studio
-                            {0, 1, 0},  // Sculpture - Museum
-                            {1, 0, 0}   // Photo - Gallery
+                            {0, 0, 0, 1, 0},  // Painting - Gallery
+                            {0, 0, 1, 0, 0},  // Sculpture - Museum
+                            {1, 0, 0, 0, 0},  // Photo - Gallery
+                            {0, 1, 0, 0, 0},  // Drawing - Studio
+                            {0, 0, 0, 0, 1},  // Print - Beach
+                            {0, 0, 0, 0, 1},  // Morning - Morning
+                            {0, 0, 0, 1, 0},  // Noon - Afternoon
+                            {0, 0, 1, 0, 0},  // Night - Afternoon
+                            {0, 0, 0, 0, 1}   // Evening - Evening
+                        }
+                    );
+                case 5:
+                    return new PuzzleData(
+                        new String[][] {
+                            {"Violin", "Piano", "Flute", "Cello", "Bass"},
+                            {"Classical", "Jazz", "Folk", "Rock", "Blues"},
+                            {"Expert", "Amateur", "Beginner", "Amateur", "Beginner"}
+                        },
+                        new String[] {
+                            "The Classical piece features a string instrument",
+                            "If Piano plays Jazz, then Flute must play Folk",
+                            "The instrument in Folk music is not the largest one",
+                            "If Violin isn't in Classical, then Piano must be in Folk",
+                            "The Jazz performance uses a percussion-capable instrument",
+                            "If the Flute plays Classical, then Violin can't play Folk",
+                            "The instrument in Jazz can play both melody and harmony",
+                            "The Folk music uses the most portable instrument",
+                            "The Expert player prefers games of pure strategy",
+                            "If the Amateur plays Cards, then the Beginner doesn't play Dice",
+                            "The Dice player has more experience than the Cards player",
+                            "If Chess isn't played by the Expert, then Cards must be played by the Amateur",
+                            "The Beginner doesn't play a game involving chance",
+                            "If the Amateur plays Dice, then the Expert must play Chess",
+                            "The Cards player isn't the most experienced"
+                        },
+                        new int[][] {
+                            {1, 0, 0, 0, 0},  // Violin - Classical
+                            {0, 1, 0, 0, 0},  // Piano - Jazz
+                            {0, 0, 1, 0, 0},  // Flute - Folk
+                            {0, 0, 0, 1, 0},  // Cello - Classical
+                            {0, 0, 0, 0, 1},  // Bass - Classical
+                            {1, 0, 0, 0, 0},  // Expert - Expert
+                            {0, 1, 0, 0, 0},  // Amateur - Amateur
+                            {0, 0, 1, 0, 0},  // Beginner - Beginner
+                            {0, 0, 0, 1, 0},  // Amateur - Beginner
+                            {0, 0, 0, 0, 1}   // Beginner - Expert
                         }
                     );
             }

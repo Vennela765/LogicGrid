@@ -26,10 +26,10 @@ public class MainActivity extends AppCompatActivity {
     private Button[][] cells;
     private int currentLevel = 1;
     private String currentDifficulty = "EASY";
-    private static final int GRID_SIZE = 3;
     private static final int CELL_SIZE = 85;
     private static final int CELL_MARGIN = 2;
     private GameLogic gameLogic;
+    private int currentGridSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         initializeViews();
         setupDifficultyButtons();
         setupActionButtons();
+        currentGridSize = GameLogic.getDifficultySize(currentDifficulty);
         initializeGame();
     }
 
@@ -52,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
         mediumButton = findViewById(R.id.mediumButton);
         hardButton = findViewById(R.id.hardButton);
         cluesList = findViewById(R.id.cluesList);
-        cells = new Button[GRID_SIZE][GRID_SIZE];
     }
 
     private void setupDifficultyButtons() {
@@ -71,22 +71,11 @@ public class MainActivity extends AppCompatActivity {
         checkButton.setOnClickListener(v -> checkSolution());
     }
 
-    private void initializeGame() {
-        GameLogic.PuzzleData puzzleData = GameLogic.generatePuzzle(currentDifficulty, currentLevel);
-        if (puzzleData == null) {
-            Toast.makeText(this, "No puzzle available for this difficulty and level", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        gameLogic = new GameLogic(GRID_SIZE, puzzleData.categories, puzzleData.clues, puzzleData.solution);
-        levelText.setText("Level: " + currentDifficulty + " - Puzzle " + currentLevel);
-        initializeGrid();
-        updateClues();
-    }
-
     private void setDifficulty(String difficulty) {
         currentDifficulty = difficulty;
         currentLevel = 1;
+        currentGridSize = GameLogic.getDifficultySize(difficulty);
+        cells = new Button[currentGridSize][currentGridSize];
         updateDifficultyButtons();
         initializeGame();
     }
@@ -114,10 +103,24 @@ public class MainActivity extends AppCompatActivity {
             ContextCompat.getColor(this, R.color.primary));
     }
 
+    private void initializeGame() {
+        GameLogic.PuzzleData puzzleData = GameLogic.generatePuzzle(currentDifficulty, currentLevel);
+        if (puzzleData == null) {
+            Toast.makeText(this, "No puzzle available for this difficulty and level", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        gameLogic = new GameLogic(currentGridSize, puzzleData.categories, puzzleData.clues, puzzleData.solution);
+        levelText.setText("Level: " + currentDifficulty + " - Puzzle " + currentLevel);
+        cells = new Button[currentGridSize][currentGridSize];
+        initializeGrid();
+        updateClues();
+    }
+
     private void initializeGrid() {
         gridLayout.removeAllViews();
-        gridLayout.setColumnCount(GRID_SIZE + 1);
-        gridLayout.setRowCount(GRID_SIZE + 1);
+        gridLayout.setColumnCount(currentGridSize + 1);
+        gridLayout.setRowCount(currentGridSize + 1);
         gridLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.grid_background));
         
         // Add elevation to the grid
@@ -130,14 +133,14 @@ public class MainActivity extends AppCompatActivity {
         addHeaderCell("");
     
         // Add column headers
-        for (int j = 0; j < GRID_SIZE; j++) {
+        for (int j = 0; j < currentGridSize; j++) {
             addHeaderCell(categories[1][j]);
         }
     
         // Add row headers and grid cells
-        for (int i = 0; i < GRID_SIZE; i++) {
+        for (int i = 0; i < currentGridSize; i++) {
             addHeaderCell(categories[0][i]);
-            for (int j = 0; j < GRID_SIZE; j++) {
+            for (int j = 0; j < currentGridSize; j++) {
                 Button cell = new Button(this);
                 GridLayout.LayoutParams params = new GridLayout.LayoutParams();
                 params.width = CELL_SIZE * dpToPx;
