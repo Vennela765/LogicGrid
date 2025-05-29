@@ -51,23 +51,29 @@
                 android:textSize="16sp"
                 android:layout_marginBottom="16dp"/>
 
-            <!-- Game Grid -->
-            <androidx.cardview.widget.CardView
+            <!-- Game Grid Container -->
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="4dp"
                 android:layout_marginBottom="16dp">
 
-                <GridLayout
-                    android:id="@+id/gridLayout"
-                    android:layout_width="match_parent"
+                <!-- Game Grid Card -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:padding="8dp"/>
+                    android:layout_gravity="center_horizontal"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp">
 
-            </androidx.cardview.widget.CardView>
+                    <GridLayout
+                        android:id="@+id/gridLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"/>
+
+                </androidx.cardview.widget.CardView>
+
+            </FrameLayout>
 
             <!-- Action Buttons -->
             <LinearLayout
@@ -81,7 +87,7 @@
                     android:id="@+id/newPuzzleButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="New Puzzle"
+                    android:text="Next Level"
                     android:layout_marginEnd="16dp"/>
 
                 <Button

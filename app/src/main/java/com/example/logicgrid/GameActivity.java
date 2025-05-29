@@ -10,8 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import android.graphics.drawable.GradientDrawable;
 import android.view.animation.AnimationUtils;
-import com.google.android.material.button.MaterialButton;
 import android.widget.Toast;
+import android.util.DisplayMetrics;
 
 public class GameActivity extends AppCompatActivity {
     private GridLayout gridLayout;
@@ -19,14 +19,10 @@ public class GameActivity extends AppCompatActivity {
     private TextView messageText;
     private Button checkButton;
     private Button newPuzzleButton;
-    private MaterialButton easyButton;
-    private MaterialButton mediumButton;
-    private MaterialButton hardButton;
     private LinearLayout cluesList;
     private Button[][] cells;
     private int currentLevel;
     private String currentDifficulty;
-    private static final int CELL_SIZE = 85;
     private static final int CELL_MARGIN = 2;
     private GameLogic gameLogic;
     private int currentGridSize;
@@ -43,7 +39,6 @@ public class GameActivity extends AppCompatActivity {
         long seed = getIntent().getLongExtra("seed", currentLevel); // Get seed or use level as fallback
 
         initializeViews();
-        setupDifficultyButtons();
         setupActionButtons();
         currentGridSize = GameLogic.getDifficultySize(currentDifficulty);
         initializeGame(seed);
@@ -55,62 +50,40 @@ public class GameActivity extends AppCompatActivity {
         messageText = findViewById(R.id.messageText);
         checkButton = findViewById(R.id.checkButton);
         newPuzzleButton = findViewById(R.id.newPuzzleButton);
-        easyButton = findViewById(R.id.easyButton);
-        mediumButton = findViewById(R.id.mediumButton);
-        hardButton = findViewById(R.id.hardButton);
         cluesList = findViewById(R.id.cluesList);
-    }
-
-    private void setupDifficultyButtons() {
-        easyButton.setOnClickListener(v -> setDifficulty("EASY"));
-        mediumButton.setOnClickListener(v -> setDifficulty("MEDIUM"));
-        hardButton.setOnClickListener(v -> setDifficulty("HARD"));
-        updateDifficultyButtons();
     }
 
     private void setupActionButtons() {
         newPuzzleButton.setOnClickListener(v -> {
             currentLevel = (currentLevel % LEVELS_PER_DIFFICULTY) + 1;
-            // Generate new seed for new puzzle
-            long newSeed = System.currentTimeMillis();
-            initializeGame(newSeed);
+            initializeGame(generateSeed(currentDifficulty, currentLevel));
         });
 
         checkButton.setOnClickListener(v -> checkSolution());
     }
 
-    private void setDifficulty(String difficulty) {
-        currentDifficulty = difficulty;
-        currentLevel = 1;
-        currentGridSize = GameLogic.getDifficultySize(difficulty);
-        cells = new Button[currentGridSize][currentGridSize];
-        updateDifficultyButtons();
-        // Generate new seed when changing difficulty
-        long newSeed = System.currentTimeMillis();
-        initializeGame(newSeed);
+    private long generateSeed(String difficulty, int level) {
+        // Create a unique seed based on difficulty and level
+        return difficulty.hashCode() * 31L + level;
     }
 
-    private void updateDifficultyButtons() {
-        easyButton.setBackgroundTintList(currentDifficulty.equals("EASY") ? 
-            ContextCompat.getColorStateList(this, R.color.primary) : null);
-        easyButton.setStrokeWidth(currentDifficulty.equals("EASY") ? 0 : 2);
-        easyButton.setTextColor(currentDifficulty.equals("EASY") ? 
-            ContextCompat.getColor(this, R.color.white) : 
-            ContextCompat.getColor(this, R.color.primary));
-
-        mediumButton.setBackgroundTintList(currentDifficulty.equals("MEDIUM") ? 
-            ContextCompat.getColorStateList(this, R.color.primary) : null);
-        mediumButton.setStrokeWidth(currentDifficulty.equals("MEDIUM") ? 0 : 2);
-        mediumButton.setTextColor(currentDifficulty.equals("MEDIUM") ? 
-            ContextCompat.getColor(this, R.color.white) : 
-            ContextCompat.getColor(this, R.color.primary));
-
-        hardButton.setBackgroundTintList(currentDifficulty.equals("HARD") ? 
-            ContextCompat.getColorStateList(this, R.color.primary) : null);
-        hardButton.setStrokeWidth(currentDifficulty.equals("HARD") ? 0 : 2);
-        hardButton.setTextColor(currentDifficulty.equals("HARD") ? 
-            ContextCompat.getColor(this, R.color.white) : 
-            ContextCompat.getColor(this, R.color.primary));
+    private int calculateCellSize() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        
+        // Get screen width and height
+        int screenWidth = displayMetrics.widthPixels;
+        int screenHeight = displayMetrics.heightPixels;
+        
+        // Use 70% of the smaller screen dimension
+        int targetSize = Math.min(screenWidth, screenHeight) * 70 / 100;
+        
+        // Remove padding and margins (in pixels)
+        int padding = (int) (32 * getResources().getDisplayMetrics().density); // 16dp padding on each side
+        targetSize -= padding;
+        
+        // Calculate cell size based on grid size (add 1 for headers)
+        return targetSize / (currentGridSize + 1);
     }
 
     private void initializeGame(long seed) {
@@ -171,7 +144,7 @@ public class GameActivity extends AppCompatActivity {
     @SuppressWarnings("unchecked")
     private <T extends View> T createCell(String text, boolean isHeader) {
         int dpToPx = (int) getResources().getDisplayMetrics().density;
-        int cellSizePx = CELL_SIZE * dpToPx;
+        int cellSizePx = calculateCellSize();
         int marginPx = CELL_MARGIN * dpToPx;
 
         GridLayout.LayoutParams params = new GridLayout.LayoutParams();
@@ -200,29 +173,24 @@ public class GameActivity extends AppCompatActivity {
             
             // Set text properties for consistent appearance
             header.setTextColor(ContextCompat.getColor(this, R.color.header_text));
-            header.setIncludeFontPadding(false); // Remove extra font padding
-            header.setLineSpacing(0, 1.0f); // Remove extra line spacing
-            header.setTextSize(11); // Even smaller text size
+            header.setIncludeFontPadding(false);
+            header.setLineSpacing(0, 1.0f);
+            header.setTextSize(14); // Increased text size
             
             // Strict text constraints
-            header.setSingleLine(false); // Allow multiple lines
-            header.setLines(2); // Force exactly 2 lines
+            header.setSingleLine(false);
+            header.setLines(2);
             header.setMaxLines(2);
             header.setEllipsize(android.text.TextUtils.TruncateAt.END);
             
             // Minimal padding to prevent text touching edges
-            int paddingDp = 2;
+            int paddingDp = 4;
             int paddingPx = paddingDp * dpToPx;
             header.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
             
-            // Advanced text layout settings
             header.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_BALANCED);
             header.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_FULL);
-            
-            // Prevent any text scaling
             header.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_NONE);
-            
-            // Set the text after configuring the TextView
             header.setText(text);
             
             shape.setColor(ContextCompat.getColor(this, R.color.header_background));
@@ -235,7 +203,6 @@ public class GameActivity extends AppCompatActivity {
         } else {
             Button cell = new Button(this);
             
-            // Force fixed size and prevent any size changes
             cell.setWidth(cellSizePx);
             cell.setHeight(cellSizePx);
             cell.setMinWidth(cellSizePx);
@@ -248,15 +215,10 @@ public class GameActivity extends AppCompatActivity {
             cell.setLayoutParams(params);
             cell.setElevation(4 * dpToPx);
             
-            // Remove all padding and size constraints
             cell.setPadding(0, 0, 0, 0);
             cell.setIncludeFontPadding(false);
-            
-            // Center any text that might be added
             cell.setGravity(android.view.Gravity.CENTER);
-            
-            // Set text size to match headers
-            cell.setTextSize(11);
+            cell.setTextSize(16); // Increased text size for marks
             
             gridLayout.addView(cell);
             return (T) cell;
@@ -358,21 +320,9 @@ public class GameActivity extends AppCompatActivity {
             currentLevel++;
             if (currentLevel > LEVELS_PER_DIFFICULTY) {
                 currentLevel = 1;
-                switch (currentDifficulty) {
-                    case "EASY":
-                        setDifficulty("MEDIUM");
-                        break;
-                    case "MEDIUM":
-                        setDifficulty("HARD");
-                        break;
-                    case "HARD":
-                        // Start over from level 1 of HARD
-                        initializeGame(System.currentTimeMillis());
-                        break;
-                }
-            } else {
-                initializeGame(System.currentTimeMillis());
+                Toast.makeText(this, getString(R.string.all_levels_completed), Toast.LENGTH_LONG).show();
             }
+            initializeGame(System.currentTimeMillis());
         }
     }
 }
