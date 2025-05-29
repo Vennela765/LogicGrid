@@ -70,8 +70,14 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private long generateSeed(String difficulty, int level) {
-        // Create a unique seed based on difficulty and level
-        return difficulty.hashCode() * 31L + level;
+        // Create a deterministic seed based on difficulty and level
+        // This ensures the same puzzle is generated for the same level every time
+        String seedString = difficulty + "_" + level;
+        long seed = 0;
+        for (char c : seedString.toCharArray()) {
+            seed = 31 * seed + c;
+        }
+        return seed;
     }
 
     private int calculateCellSize() {
@@ -323,13 +329,13 @@ public class GameActivity extends AppCompatActivity {
             isCorrect ? R.color.button_green : R.color.error));
 
         if (isCorrect) {
-            // Automatically move to next level
+            // Automatically move to next level with its deterministic puzzle
             currentLevel++;
             if (currentLevel > LEVELS_PER_DIFFICULTY) {
                 currentLevel = 1;
                 Toast.makeText(this, getString(R.string.all_levels_completed), Toast.LENGTH_LONG).show();
             }
-            initializeGame(System.currentTimeMillis());
+            initializeGame(generateSeed(currentDifficulty, currentLevel));
         }
     }
 }
