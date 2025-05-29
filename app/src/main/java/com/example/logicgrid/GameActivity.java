@@ -13,6 +13,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 import android.util.DisplayMetrics;
+import android.text.Layout;
 
 public class GameActivity extends AppCompatActivity {
     private GridLayout gridLayout;
@@ -28,13 +29,14 @@ public class GameActivity extends AppCompatActivity {
     private GameLogic gameLogic;
     private int currentGridSize;
     private static final int LEVELS_PER_DIFFICULTY = 100; // Match with LevelSelectActivity
+    private float density;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        // Get difficulty, level and seed from intent
+        density = getResources().getDisplayMetrics().density;
         currentDifficulty = getIntent().getStringExtra("difficulty");
         currentLevel = getIntent().getIntExtra("level", 1);
         long seed = getIntent().getLongExtra("seed", currentLevel); // Get seed or use level as fallback
@@ -75,7 +77,7 @@ public class GameActivity extends AppCompatActivity {
         String seedString = difficulty + "_" + level;
         long seed = 0;
         for (char c : seedString.toCharArray()) {
-            seed = 31 * seed + c;
+            seed = 31L * seed + c;
         }
         return seed;
     }
@@ -102,7 +104,7 @@ public class GameActivity extends AppCompatActivity {
     private void initializeGame(long seed) {
         GameLogic.PuzzleData puzzleData = GameLogic.generatePuzzle(currentDifficulty, seed);
         if (puzzleData == null) {
-            Toast.makeText(this, "Error generating puzzle", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error_generating_puzzle, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -121,14 +123,13 @@ public class GameActivity extends AppCompatActivity {
         
         // Add padding to the entire grid
         int gridPaddingDp = 8;
-        int gridPaddingPx = (int) (gridPaddingDp * getResources().getDisplayMetrics().density);
+        int gridPaddingPx = (int) (gridPaddingDp * density);
         gridLayout.setPadding(gridPaddingPx, gridPaddingPx, gridPaddingPx, gridPaddingPx);
         
         // Add elevation to the grid
-        gridLayout.setElevation(8 * getResources().getDisplayMetrics().density);
+        gridLayout.setElevation(8 * density);
     
         String[][] categories = gameLogic.getCategories();
-        int dpToPx = (int) (getResources().getDisplayMetrics().density);
     
         // Add empty top-left cell
         createCell("", true);
@@ -156,9 +157,8 @@ public class GameActivity extends AppCompatActivity {
 
     @SuppressWarnings("unchecked")
     private <T extends View> T createCell(String text, boolean isHeader) {
-        int dpToPx = (int) getResources().getDisplayMetrics().density;
         int cellSizePx = calculateCellSize();
-        int marginPx = CELL_MARGIN * dpToPx;
+        int marginPx = (int) (CELL_MARGIN * density);
 
         GridLayout.LayoutParams params = new GridLayout.LayoutParams();
         params.width = cellSizePx;
@@ -167,8 +167,8 @@ public class GameActivity extends AppCompatActivity {
 
         GradientDrawable shape = new GradientDrawable();
         shape.setShape(GradientDrawable.RECTANGLE);
-        shape.setCornerRadius(8 * dpToPx);
-        shape.setStroke(dpToPx, ContextCompat.getColor(this, R.color.grid_border));
+        shape.setCornerRadius(8 * density);
+        shape.setStroke((int) density, ContextCompat.getColor(this, R.color.grid_border));
 
         if (isHeader) {
             TextView header = new TextView(this);
@@ -198,18 +198,18 @@ public class GameActivity extends AppCompatActivity {
             
             // Minimal padding to prevent text touching edges
             int paddingDp = 4;
-            int paddingPx = paddingDp * dpToPx;
+            int paddingPx = (int) (paddingDp * density);
             header.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
             
-            header.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_BALANCED);
-            header.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_FULL);
+            header.setBreakStrategy(Layout.BREAK_STRATEGY_BALANCED);
+            header.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_FULL);
             header.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_NONE);
             header.setText(text);
             
             shape.setColor(ContextCompat.getColor(this, R.color.header_background));
             header.setBackground(shape);
             header.setLayoutParams(params);
-            header.setElevation(2 * dpToPx);
+            header.setElevation(2 * density);
             
             gridLayout.addView(header);
             return (T) header;
@@ -226,7 +226,7 @@ public class GameActivity extends AppCompatActivity {
             shape.setColor(ContextCompat.getColor(this, R.color.cell_empty));
             cell.setBackground(shape);
             cell.setLayoutParams(params);
-            cell.setElevation(4 * dpToPx);
+            cell.setElevation(4 * density);
             
             cell.setPadding(0, 0, 0, 0);
             cell.setIncludeFontPadding(false);
@@ -245,9 +245,8 @@ public class GameActivity extends AppCompatActivity {
         int state = gameLogic.getCellState(row, col);
         GradientDrawable shape = new GradientDrawable();
         shape.setShape(GradientDrawable.RECTANGLE);
-        shape.setStroke(2 * (int) (getResources().getDisplayMetrics().density), 
-                       ContextCompat.getColor(this, R.color.grid_border));
-        shape.setCornerRadius(8 * (int) (getResources().getDisplayMetrics().density));
+        shape.setStroke((int) (2 * density), ContextCompat.getColor(this, R.color.grid_border));
+        shape.setCornerRadius(8 * density);
         
         switch (state) {
             case GameLogic.YES:
@@ -270,7 +269,7 @@ public class GameActivity extends AppCompatActivity {
     
         if (!isValid) {
             cell.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake));
-            Toast.makeText(this, "Invalid move!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.invalid_move, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -280,8 +279,7 @@ public class GameActivity extends AppCompatActivity {
         
         for (int i = 0; i < clues.length; i++) {
             TextView clueView = new TextView(this);
-            String clueNumber = (i + 1) + ". ";
-            clueView.setText(clueNumber + clues[i]);
+            clueView.setText(getString(R.string.clue_format, i + 1, clues[i]));
             clueView.setTextSize(16);
             clueView.setPadding(24, 16, 24, 16);
             clueView.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
@@ -291,12 +289,12 @@ public class GameActivity extends AppCompatActivity {
             GradientDrawable shape = new GradientDrawable();
             shape.setShape(GradientDrawable.RECTANGLE);
             shape.setColor(ContextCompat.getColor(this, R.color.clue_item_background));
-            shape.setCornerRadius(12 * getResources().getDisplayMetrics().density);
+            shape.setCornerRadius(12 * density);
             shape.setStroke(1, ContextCompat.getColor(this, R.color.primary_light));
             clueView.setBackground(shape);
             
             // Add elevation for a card-like effect
-            clueView.setElevation(4 * getResources().getDisplayMetrics().density);
+            clueView.setElevation(4 * density);
             
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -319,12 +317,12 @@ public class GameActivity extends AppCompatActivity {
 
     private void checkSolution() {
         if (!gameLogic.isComplete()) {
-            Toast.makeText(this, "Complete the puzzle first!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.complete_puzzle, Toast.LENGTH_SHORT).show();
             return;
         }
 
         boolean isCorrect = gameLogic.checkSolution();
-        messageText.setText(isCorrect ? "Congratulations! Level completed!" : "Try again!");
+        messageText.setText(getString(isCorrect ? R.string.congratulations : R.string.try_again));
         messageText.setTextColor(ContextCompat.getColor(this, 
             isCorrect ? R.color.button_green : R.color.error));
 
