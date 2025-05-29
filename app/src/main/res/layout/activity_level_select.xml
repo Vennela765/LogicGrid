@@ -56,9 +56,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:layout_marginBottom="32dp"/>
+                android:paddingVertical="8dp"
+                android:layout_marginBottom="32dp"
+                android:nestedScrollingEnabled="false"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -74,9 +74,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:layout_marginBottom="32dp"/>
+                android:paddingVertical="8dp"
+                android:layout_marginBottom="32dp"
+                android:nestedScrollingEnabled="false"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -92,8 +92,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"/>
+                android:paddingVertical="8dp"
+                android:nestedScrollingEnabled="false"/>
 
         </LinearLayout>
 

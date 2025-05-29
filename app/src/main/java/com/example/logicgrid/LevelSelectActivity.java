@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
 import androidx.appcompat.widget.Toolbar;
@@ -18,7 +18,8 @@ public class LevelSelectActivity extends AppCompatActivity {
     private RecyclerView easyLevelsList;
     private RecyclerView mediumLevelsList;
     private RecyclerView hardLevelsList;
-    private static final int LEVELS_PER_DIFFICULTY = 100; // Increased to 100 levels per difficulty
+    private static final int LEVELS_PER_DIFFICULTY = 100;
+    private static final int COLUMNS = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +42,10 @@ public class LevelSelectActivity extends AppCompatActivity {
         mediumLevelsList = findViewById(R.id.mediumLevelsList);
         hardLevelsList = findViewById(R.id.hardLevelsList);
 
-        // Set layout managers with horizontal scrolling
-        easyLevelsList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        mediumLevelsList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        hardLevelsList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        // Set layout managers with grid layout
+        easyLevelsList.setLayoutManager(new GridLayoutManager(this, COLUMNS));
+        mediumLevelsList.setLayoutManager(new GridLayoutManager(this, COLUMNS));
+        hardLevelsList.setLayoutManager(new GridLayoutManager(this, COLUMNS));
 
         // Set adapters with infinite levels
         setupRecyclerView(easyLevelsList, "EASY", LEVELS_PER_DIFFICULTY, R.color.easy_level);
@@ -68,7 +69,7 @@ public class LevelSelectActivity extends AppCompatActivity {
         String seedString = difficulty + "_" + level;
         long seed = 0;
         for (char c : seedString.toCharArray()) {
-            seed = 31 * seed + c;
+            seed = 31L * seed + c;
         }
         return seed;
     }
@@ -102,7 +103,19 @@ public class LevelSelectActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(LevelViewHolder holder, int position) {
             int level = position + 1;
-            holder.levelButton.setText(String.valueOf(level));
+            // Format level number to show all numbers in a single line
+            String levelText = String.valueOf(level);
+            
+            // Adjust text size based on number length
+            if (level >= 100) {
+                holder.levelButton.setTextSize(12); // Smaller text for 3 digits
+            } else if (level >= 10) {
+                holder.levelButton.setTextSize(14); // Medium text for 2 digits
+            } else {
+                holder.levelButton.setTextSize(16); // Larger text for 1 digit
+            }
+            
+            holder.levelButton.setText(levelText);
             holder.levelButton.setBackgroundTintList(android.content.res.ColorStateList.valueOf(buttonColor));
             holder.levelButton.setOnClickListener(v -> listener.onLevelSelected(difficulty, level));
         }
