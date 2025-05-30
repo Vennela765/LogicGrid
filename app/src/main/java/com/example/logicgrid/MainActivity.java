@@ -2,21 +2,29 @@ package com.example.logicgrid;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.textfield.TextInputEditText;
 import com.example.logicgrid.data.DatabaseHelper;
 import com.example.logicgrid.data.Player;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements PlayerAdapter.OnPlayerClickListener {
+public class MainActivity extends AppCompatActivity {
     private DatabaseHelper dbHelper;
-    private TextInputEditText playerNameInput;
     private RecyclerView recentPlayersRecyclerView;
-    private PlayerAdapter playerAdapter;
+    private EditText playerNameInput;
+    private Button playButton;
+    private Button confirmPlayerButton;
+    private Button cancelButton;
+    private LinearLayout playerSelectionOverlay;
+    private LinearLayout newPlayerDialog;
+    private ImageButton fingerprintButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,75 +32,86 @@ public class MainActivity extends AppCompatActivity implements PlayerAdapter.OnP
         setContentView(R.layout.activity_main);
 
         dbHelper = new DatabaseHelper(this);
-        
-        // Initialize views
-        playerNameInput = findViewById(R.id.playerNameInput);
+        initializeViews();
+        setupListeners();
+        setupRecentPlayers();
+    }
+
+    private void initializeViews() {
         recentPlayersRecyclerView = findViewById(R.id.recentPlayersRecyclerView);
+        playerNameInput = findViewById(R.id.playerNameInput);
+        playButton = findViewById(R.id.playButton);
+        confirmPlayerButton = findViewById(R.id.confirmPlayerButton);
+        cancelButton = findViewById(R.id.cancelButton);
+        playerSelectionOverlay = findViewById(R.id.playerSelectionOverlay);
+        newPlayerDialog = findViewById(R.id.newPlayerDialog);
+        fingerprintButton = findViewById(R.id.fingerprintButton);
+    }
+
+    private void setupListeners() {
+        fingerprintButton.setOnClickListener(v -> togglePlayerList());
         
-        // Setup RecyclerView
+        playButton.setOnClickListener(v -> showNewPlayerDialog());
+
+        confirmPlayerButton.setOnClickListener(v -> {
+            String playerName = playerNameInput.getText().toString().trim();
+            if (!playerName.isEmpty()) {
+                createOrSelectPlayer(playerName);
+            } else {
+                Toast.makeText(this, R.string.invalid_name, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        cancelButton.setOnClickListener(v -> hideNewPlayerDialog());
+    }
+
+    private void setupRecentPlayers() {
         recentPlayersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        playerAdapter = new PlayerAdapter(this);
-        recentPlayersRecyclerView.setAdapter(playerAdapter);
-        
-        // Load recent players
-        loadRecentPlayers();
-
-        // Setup play button
-        findViewById(R.id.playButton).setOnClickListener(v -> handleStartGame());
+        updateRecentPlayersList();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        loadRecentPlayers();
+    private void updateRecentPlayersList() {
+        List<Player> recentPlayers = dbHelper.getAllPlayers();
+        RecentPlayersAdapter adapter = new RecentPlayersAdapter(recentPlayers, this::selectPlayer);
+        recentPlayersRecyclerView.setAdapter(adapter);
     }
 
-    private void loadRecentPlayers() {
-        List<Player> players = dbHelper.getAllPlayers();
-        playerAdapter.setPlayers(players);
-    }
-
-    private void handleStartGame() {
-        String playerName = playerNameInput.getText().toString().trim();
-        
-        if (TextUtils.isEmpty(playerName)) {
-            Toast.makeText(this, R.string.enter_name_prompt, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Get or create player
-        Player player = dbHelper.getPlayerByName(playerName);
-        if (player == null) {
-            // Create new player
-            player = new Player(playerName);
-            long id = dbHelper.addPlayer(player);
-            player.setId((int) id);
-            Toast.makeText(this, getString(R.string.new_player), Toast.LENGTH_SHORT).show();
+    private void togglePlayerList() {
+        if (playerSelectionOverlay.getVisibility() == View.VISIBLE) {
+            playerSelectionOverlay.setVisibility(View.GONE);
         } else {
-            Toast.makeText(this, getString(R.string.welcome_back, playerName), Toast.LENGTH_SHORT).show();
+            playerSelectionOverlay.setVisibility(View.VISIBLE);
+            updateRecentPlayersList();
+            // Hide new player dialog if it's visible
+            newPlayerDialog.setVisibility(View.GONE);
         }
-
-        // Start the game with this player
-        startGame(player);
     }
 
-    @Override
-    public void onPlayerClick(Player player) {
-        playerNameInput.setText(player.getName());
-        handleStartGame();
+    private void showNewPlayerDialog() {
+        newPlayerDialog.setVisibility(View.VISIBLE);
+        playerNameInput.setText("");
+        // Hide player list if it's visible
+        playerSelectionOverlay.setVisibility(View.GONE);
     }
 
-    private void startGame(Player player) {
-        // Save the current player's name to SharedPreferences
-        getSharedPreferences("LogicGridPrefs", MODE_PRIVATE)
-                .edit()
-                .putString("current_player", player.getName())
-                .apply();
+    private void hideNewPlayerDialog() {
+        newPlayerDialog.setVisibility(View.GONE);
+        playerNameInput.setText("");
+    }
 
-        // Start LevelSelectActivity
+    private void selectPlayer(Player player) {
         Intent intent = new Intent(this, LevelSelectActivity.class);
         intent.putExtra("player_name", player.getName());
-        intent.putExtra("current_level", player.getCurrentLevel());
         startActivity(intent);
+    }
+
+    private void createOrSelectPlayer(String playerName) {
+        Player player = dbHelper.getPlayerByName(playerName);
+        if (player == null) {
+            player = new Player(playerName);
+            dbHelper.addPlayer(player);
+        }
+        selectPlayer(player);
+        hideNewPlayerDialog();
     }
 }
