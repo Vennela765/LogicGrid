@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.EditText;
+import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -18,7 +19,7 @@ import com.example.logicgrid.data.DatabaseHelper;
 import com.example.logicgrid.data.Player;
 import java.util.List;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements PlayersAdapter.OnPlayerClickListener {
     private DrawerLayout drawerLayout;
     private CardView leaderboardOverlay;
     private ImageButton fingerprintButton;
@@ -75,6 +76,8 @@ public class HomeActivity extends AppCompatActivity {
                         dbHelper.addPlayer(player);
                     }
                     startLevelSelect(playerName);
+                } else {
+                    Toast.makeText(this, R.string.invalid_name, Toast.LENGTH_SHORT).show();
                 }
             })
             .setNegativeButton(android.R.string.cancel, null)
@@ -99,7 +102,7 @@ public class HomeActivity extends AppCompatActivity {
     private void updatePlayersList() {
         List<Player> players = dbHelper.getAllPlayers();
         players.sort((p1, p2) -> p2.getCurrentLevel() - p1.getCurrentLevel());
-        PlayersAdapter adapter = new PlayersAdapter(players);
+        PlayersAdapter adapter = new PlayersAdapter(players, this);
         playersRecyclerView.setAdapter(adapter);
     }
 
@@ -118,5 +121,11 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void onPlayerClick(Player player) {
+        hideLeaderboard();
+        startLevelSelect(player.getName());
     }
 } 

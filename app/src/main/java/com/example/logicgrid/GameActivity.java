@@ -501,15 +501,17 @@ public class GameActivity extends AppCompatActivity {
                 .setMessage(getString(R.string.level_completed_with_stars, earnedStars))
                 .setPositiveButton(R.string.next_level, (dialog, which) -> {
                     if (currentLevel < LEVELS_PER_DIFFICULTY) {
-                        // Start next level
+                        // Start next level with same difficulty
                         Intent intent = new Intent(this, GameActivity.class);
+                        intent.putExtra("difficulty", currentDifficulty);
                         intent.putExtra("level", currentLevel + 1);
                         intent.putExtra("player_name", playerName);
+                        intent.putExtra("seed", generateSeed(currentDifficulty, currentLevel + 1));
                         startActivity(intent);
                         finish();
                     } else {
-                        // All levels completed
-                        Toast.makeText(this, R.string.all_levels_completed, Toast.LENGTH_LONG).show();
+                        // All levels completed for this difficulty
+                        Toast.makeText(this, getString(R.string.all_levels_completed), Toast.LENGTH_LONG).show();
                         finish();
                     }
                 })

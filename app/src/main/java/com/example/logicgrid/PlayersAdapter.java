@@ -11,9 +11,15 @@ import java.util.List;
 
 public class PlayersAdapter extends RecyclerView.Adapter<PlayersAdapter.ViewHolder> {
     private final List<Player> players;
+    private final OnPlayerClickListener listener;
 
-    public PlayersAdapter(List<Player> players) {
+    public interface OnPlayerClickListener {
+        void onPlayerClick(Player player);
+    }
+
+    public PlayersAdapter(List<Player> players, OnPlayerClickListener listener) {
         this.players = players;
+        this.listener = listener;
     }
 
     @NonNull
@@ -30,6 +36,12 @@ public class PlayersAdapter extends RecyclerView.Adapter<PlayersAdapter.ViewHold
         holder.rankText.setText(String.valueOf(position + 1));
         holder.nameText.setText(player.getName());
         holder.levelText.setText(String.format("Level %d", player.getCurrentLevel()));
+        
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onPlayerClick(player);
+            }
+        });
     }
 
     @Override

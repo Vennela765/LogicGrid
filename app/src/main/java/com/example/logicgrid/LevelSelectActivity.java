@@ -50,8 +50,8 @@ public class LevelSelectActivity extends AppCompatActivity {
         }
 
         if (currentPlayer == null) {
-            // If somehow we got here without a valid player, go back to main screen
-            startActivity(new Intent(this, MainActivity.class));
+            // If somehow we got here without a valid player, go back to home screen
+            startActivity(new Intent(this, HomeActivity.class));
             finish();
             return;
         }
@@ -158,9 +158,8 @@ public class LevelSelectActivity extends AppCompatActivity {
             // Enable/disable button based on level availability
             holder.levelButton.setEnabled(level <= currentPlayer.getCurrentLevel());
             
-            // Set click listener with final position
-            final int finalLevel = level;
-            holder.levelButton.setOnClickListener(v -> listener.onLevelSelected(difficulty, finalLevel));
+            // Set click listener
+            holder.levelButton.setOnClickListener(v -> listener.onLevelSelected(difficulty, level));
         }
 
         @Override
@@ -186,34 +185,7 @@ public class LevelSelectActivity extends AppCompatActivity {
         // Refresh player data and UI when returning to this screen
         if (playerName != null) {
             currentPlayer = dbHelper.getPlayerByName(playerName);
-            setupLevelButtons();
+            setupRecyclerViews(); // Refresh the level displays
         }
-    }
-
-    private void setupLevelButtons() {
-        int maxLevel = currentPlayer.getCurrentLevel();
-        
-        // Find all level buttons and set their state
-        for (int i = 1; i <= 10; i++) {
-            int buttonId = getResources().getIdentifier("level" + i + "Button", "id", getPackageName());
-            MaterialButton levelButton = findViewById(buttonId);
-            
-            if (levelButton != null) {
-                final int level = i;
-                if (level <= maxLevel) {
-                    levelButton.setEnabled(true);
-                    levelButton.setOnClickListener(v -> startLevel(level));
-                } else {
-                    levelButton.setEnabled(false);
-                }
-            }
-        }
-    }
-
-    private void startLevel(int level) {
-        Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra("level", level);
-        intent.putExtra("player_name", playerName);
-        startActivity(intent);
     }
 } 
