@@ -26,6 +26,11 @@ import android.view.WindowManager;
 import com.google.android.material.button.MaterialButton;
 import android.os.Handler;
 import android.app.Dialog;
+import android.content.Intent;
+import android.app.AlertDialog;
+
+import com.example.logicgrid.data.DatabaseHelper;
+import com.example.logicgrid.data.Player;
 
 public class GameActivity extends AppCompatActivity {
     private GridLayout gridLayout;
@@ -42,15 +47,36 @@ public class GameActivity extends AppCompatActivity {
     private int currentGridSize;
     private static final int LEVELS_PER_DIFFICULTY = 100; // Match with LevelSelectActivity
     private float density;
+    private DatabaseHelper dbHelper;
+    private Player currentPlayer;
+    private String playerName;
+    private int earnedStars;
+    private int moveCount = 0;
+    private int optimalMoves = 20; // Default value, you can adjust this based on level difficulty
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        dbHelper = new DatabaseHelper(this);
+        
+        // Get player information
+        playerName = getIntent().getStringExtra("player_name");
+        if (playerName != null) {
+            currentPlayer = dbHelper.getPlayerByName(playerName);
+        }
+
+        if (currentPlayer == null) {
+            // If somehow we got here without a valid player, go back to main screen
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+            return;
+        }
+
+        currentLevel = getIntent().getIntExtra("level", 1);
         density = getResources().getDisplayMetrics().density;
         currentDifficulty = getIntent().getStringExtra("difficulty");
-        currentLevel = getIntent().getIntExtra("level", 1);
         long seed = getIntent().getLongExtra("seed", currentLevel); // Get seed or use level as fallback
 
         initializeViews();
@@ -112,6 +138,17 @@ public class GameActivity extends AppCompatActivity {
         if (puzzleData == null) {
             Toast.makeText(this, R.string.error_generating_puzzle, Toast.LENGTH_SHORT).show();
             return;
+        }
+
+        // Reset move count
+        moveCount = 0;
+        
+        // Set optimal moves based on difficulty and grid size
+        optimalMoves = currentGridSize * currentGridSize / 2;
+        if ("MEDIUM".equals(currentDifficulty)) {
+            optimalMoves = (int)(optimalMoves * 1.5);
+        } else if ("HARD".equals(currentDifficulty)) {
+            optimalMoves = optimalMoves * 2;
         }
 
         // Clear any previous completion message
@@ -305,6 +342,10 @@ public class GameActivity extends AppCompatActivity {
         Button cell = cells[row][col];
         boolean isValid = gameLogic.toggleCell(row, col);
         
+        if (isValid) {
+            moveCount++; // Increment move count only for valid moves
+        }
+        
         int state = gameLogic.getCellState(row, col);
         GradientDrawable shape = new GradientDrawable();
         shape.setShape(GradientDrawable.RECTANGLE);
@@ -412,7 +453,7 @@ public class GameActivity extends AppCompatActivity {
             
             // Show completion popup with a slight delay for better UX
             new Handler().postDelayed(() -> {
-                showLevelCompletePopup();
+                handleGameCompletion();
             }, 1000); // 1 second delay
         } else {
             messageText.setText(getString(R.string.try_again));
@@ -421,53 +462,59 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    private void showLevelCompletePopup() {
-        // Create and show the dialog
-        Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.level_complete_popup);
-        dialog.setCancelable(false); // Prevent dismissing by tapping outside
+    private void handleGameCompletion() {
+        // Calculate stars based on time, moves, or other metrics
+        earnedStars = calculateStars();
         
-        // Set dialog window attributes
-        Window window = dialog.getWindow();
-        if (window != null) {
-            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, 
-                           WindowManager.LayoutParams.WRAP_CONTENT);
-            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            
-            // Add slide up animation for the dialog
-            window.setWindowAnimations(android.R.style.Animation_Dialog);
+        // Update player progress
+        if (currentLevel >= currentPlayer.getCurrentLevel()) {
+            currentPlayer.setCurrentLevel(currentLevel + 1);
         }
+        currentPlayer.setStarsEarned(currentPlayer.getStarsEarned() + earnedStars);
+        
+        // Save to database
+        dbHelper.updatePlayer(currentPlayer);
 
-        // Set level text
-        TextView levelTextView = dialog.findViewById(R.id.levelTextView);
-        levelTextView.setText(String.format("Level %d Completed!", currentLevel));
+        // Show completion dialog
+        showCompletionDialog();
+    }
 
-        // Setup next puzzle button
-        MaterialButton nextPuzzleButton = dialog.findViewById(R.id.nextPuzzleButton);
-        nextPuzzleButton.setOnClickListener(v -> {
-            // Add click animation to the button
-            v.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));
-            
-            new Handler().postDelayed(() -> {
-                dialog.dismiss();
-                currentLevel++;
-                if (currentLevel > LEVELS_PER_DIFFICULTY) {
-                    currentLevel = 1;
-                    Toast.makeText(this, getString(R.string.all_levels_completed), 
-                                 Toast.LENGTH_LONG).show();
-                }
-                // Re-enable check button for the next level
-                checkButton.setEnabled(true);
-                // Clear the message text before initializing new game
-                messageText.setText("");
-                initializeGame(generateSeed(currentDifficulty, currentLevel));
-            }, 200); // Short delay for button animation
-        });
+    private int calculateStars() {
+        // Example star calculation based on moves and time
+        // You can modify this based on your game's scoring system
+        int stars = 3;
+        
+        // Deduct stars based on number of moves
+        if (moveCount > optimalMoves * 1.5) {
+            stars--;
+        }
+        if (moveCount > optimalMoves * 2) {
+            stars--;
+        }
+        
+        return Math.max(1, stars); // Minimum 1 star for completing the level
+    }
 
-        // Show dialog with animation
-        dialog.show();
-        View dialogView = dialog.findViewById(android.R.id.content);
-        dialogView.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
+    private void showCompletionDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.congratulations)
+                .setMessage(getString(R.string.level_completed_with_stars, earnedStars))
+                .setPositiveButton(R.string.next_level, (dialog, which) -> {
+                    if (currentLevel < LEVELS_PER_DIFFICULTY) {
+                        // Start next level
+                        Intent intent = new Intent(this, GameActivity.class);
+                        intent.putExtra("level", currentLevel + 1);
+                        intent.putExtra("player_name", playerName);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        // All levels completed
+                        Toast.makeText(this, R.string.all_levels_completed, Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                })
+                .setNegativeButton(R.string.back_to_levels, (dialog, which) -> finish())
+                .setCancelable(false)
+                .show();
     }
 }

@@ -13,6 +13,10 @@ import com.google.android.material.button.MaterialButton;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import java.util.Random;
+import android.widget.ImageView;
+
+import com.example.logicgrid.data.DatabaseHelper;
+import com.example.logicgrid.data.Player;
 
 public class LevelSelectActivity extends AppCompatActivity {
     private RecyclerView easyLevelsList;
@@ -20,6 +24,9 @@ public class LevelSelectActivity extends AppCompatActivity {
     private RecyclerView hardLevelsList;
     private static final int LEVELS_PER_DIFFICULTY = 100;
     private static final int COLUMNS = 10;
+    private DatabaseHelper dbHelper;
+    private Player currentPlayer;
+    private String playerName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +40,21 @@ public class LevelSelectActivity extends AppCompatActivity {
 
         ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> onBackPressed());
+
+        dbHelper = new DatabaseHelper(this);
+        
+        // Get player information
+        playerName = getIntent().getStringExtra("player_name");
+        if (playerName != null) {
+            currentPlayer = dbHelper.getPlayerByName(playerName);
+        }
+
+        if (currentPlayer == null) {
+            // If somehow we got here without a valid player, go back to main screen
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+            return;
+        }
 
         setupRecyclerViews();
     }
@@ -62,12 +84,12 @@ public class LevelSelectActivity extends AppCompatActivity {
             Intent intent = new Intent(this, GameActivity.class);
             intent.putExtra("difficulty", diff);
             intent.putExtra("level", level);
+            intent.putExtra("player_name", playerName);
             long seed = generateSeed(diff, level);
             intent.putExtra("seed", seed);
             startActivity(intent);
-        });
+        }, currentPlayer);
         recyclerView.setAdapter(adapter);
-        // Force the adapter to show all items
         adapter.notifyDataSetChanged();
     }
 
@@ -86,17 +108,19 @@ public class LevelSelectActivity extends AppCompatActivity {
         private final OnLevelSelectedListener listener;
         private final int buttonColor;
         private final AppCompatActivity activity;
+        private final Player currentPlayer;
 
         public interface OnLevelSelectedListener {
             void onLevelSelected(String difficulty, int level);
         }
 
-        LevelAdapter(AppCompatActivity activity, String difficulty, int levelCount, int colorRes, OnLevelSelectedListener listener) {
+        LevelAdapter(AppCompatActivity activity, String difficulty, int levelCount, int colorRes, OnLevelSelectedListener listener, Player player) {
             this.activity = activity;
             this.difficulty = difficulty;
             this.levelCount = levelCount;
             this.listener = listener;
             this.buttonColor = ContextCompat.getColor(activity, colorRes);
+            this.currentPlayer = player;
         }
 
         @Override
@@ -124,6 +148,16 @@ public class LevelSelectActivity extends AppCompatActivity {
             holder.levelButton.setText(levelText);
             holder.levelButton.setBackgroundTintList(android.content.res.ColorStateList.valueOf(buttonColor));
             
+            // Show star for completed levels
+            if (level < currentPlayer.getCurrentLevel()) {
+                holder.starIcon.setVisibility(View.VISIBLE);
+            } else {
+                holder.starIcon.setVisibility(View.GONE);
+            }
+            
+            // Enable/disable button based on level availability
+            holder.levelButton.setEnabled(level <= currentPlayer.getCurrentLevel());
+            
             // Set click listener with final position
             final int finalLevel = level;
             holder.levelButton.setOnClickListener(v -> listener.onLevelSelected(difficulty, finalLevel));
@@ -136,11 +170,50 @@ public class LevelSelectActivity extends AppCompatActivity {
 
         static class LevelViewHolder extends RecyclerView.ViewHolder {
             MaterialButton levelButton;
+            ImageView starIcon;
 
             LevelViewHolder(View itemView) {
                 super(itemView);
                 levelButton = itemView.findViewById(R.id.levelButton);
+                starIcon = itemView.findViewById(R.id.starIcon);
             }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Refresh player data and UI when returning to this screen
+        if (playerName != null) {
+            currentPlayer = dbHelper.getPlayerByName(playerName);
+            setupLevelButtons();
+        }
+    }
+
+    private void setupLevelButtons() {
+        int maxLevel = currentPlayer.getCurrentLevel();
+        
+        // Find all level buttons and set their state
+        for (int i = 1; i <= 10; i++) {
+            int buttonId = getResources().getIdentifier("level" + i + "Button", "id", getPackageName());
+            MaterialButton levelButton = findViewById(buttonId);
+            
+            if (levelButton != null) {
+                final int level = i;
+                if (level <= maxLevel) {
+                    levelButton.setEnabled(true);
+                    levelButton.setOnClickListener(v -> startLevel(level));
+                } else {
+                    levelButton.setEnabled(false);
+                }
+            }
+        }
+    }
+
+    private void startLevel(int level) {
+        Intent intent = new Intent(this, GameActivity.class);
+        intent.putExtra("level", level);
+        intent.putExtra("player_name", playerName);
+        startActivity(intent);
     }
 } 

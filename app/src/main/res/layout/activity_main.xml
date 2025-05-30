@@ -1,75 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context=".MainActivity">
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <LinearLayout
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/app_name"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/game_subtitle"
+        android:textSize="18sp"
+        android:layout_marginBottom="32dp"/>
+
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_marginTop="-100dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_marginBottom="24dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp">
 
-        <TextView
-            android:id="@+id/gameTitleText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="LogicGrid"
-            android:textColor="@color/primary"
-            android:textSize="48sp"
-            android:textStyle="bold"
-            android:gravity="center" />
-
-        <TextView
-            android:id="@+id/gameSubtitleText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Test your logical thinking!"
-            android:textColor="@color/primary"
-            android:textSize="20sp"
-            android:gravity="center" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/playButton"
-            android:layout_width="200dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="48dp"
-            android:text="PLAY"
-            android:textSize="20sp"
-            android:backgroundTint="@color/primary"
-            app:cornerRadius="30dp" />
-
-        <TextView
-            android:id="@+id/instructionsTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="48dp"
-            android:text="How to Play"
-            android:textColor="@color/primary"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/instructionsText"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginHorizontal="24dp"
-            android:gravity="center"
-            android:lineSpacingExtra="8dp"
-            android:text="• Logic Grid Puzzles are solved using clues\n\n• Fill the grid with ✓ (yes) and ✗ (no) marks\n\n• Click cells to cycle through ✓, ✗, and empty\n\n• Use logic to determine possible combinations\n\n• Each item matches with one from each category\n\n• Complete by filling all cells correctly!"
-            android:textColor="@color/primary"
-            android:textSize="16sp" />
+            android:orientation="vertical"
+            android:padding="16dp">
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/recent_players"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recentPlayersRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxHeight="200dp"/>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/playerNameInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_player_name"
+            android:inputType="textPersonName"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/playButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/play_button"
+        android:textSize="18sp"/>
+
+</LinearLayout>
