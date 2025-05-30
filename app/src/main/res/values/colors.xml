@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#2196F3</color>
-    <color name="primary_dark">#1976D2</color>
-    <color name="primary_light">#BBDEFB</color>
-    <color name="accent">#FF4081</color>
+    <color name="primary">#7A36A0</color>
+    <color name="primary_dark">#5E2B7A</color>
+    <color name="primary_light">#B388FF</color>
+    <color name="accent">#E1BEE7</color>
     <color name="accent_dark">#2e7d32</color>
     <color name="error">#D32F2F</color>
     <color name="error_light">#ffebee</color>
     <color name="success">#4caf50</color>
     <color name="success_light">#e8f5e9</color>
-    <color name="cell_border">#1a237e</color>
-    <color name="cell_selected">#2196f3</color>
+    <color name="cell_border">#7A36A0</color>
+    <color name="cell_selected">#7A36A0</color>
     <color name="cell_background">#F5F5F5</color>
     <color name="text_primary">#212121</color>
     <color name="text_secondary">#757575</color>
-    <color name="background">#F0F2F5</color>
+    <color name="background">#FFFFFF</color>
     <color name="button_blue">#2196F3</color>
     <color name="button_green">#4CAF50</color>
-    <color name="grid_header">#1976D2</color>
-    <color name="grid_border">#1565C0</color>
+    <color name="grid_header">#7A36A0</color>
+    <color name="grid_border">#5E2B7A</color>
     <color name="clue_background">#F5F5F5</color>
-    <color name="clue_text">#1A237E</color>
+    <color name="clue_text">#7A36A0</color>
     <color name="white">#FFFFFF</color>
-    <color name="level_background">#E3F2FD</color>
-    <color name="level_text">#1565C0</color>
-    <color name="grid_background">#E3F2FD</color>
+    <color name="level_background">#F3E5F5</color>
+    <color name="level_text">#7A36A0</color>
+    <color name="grid_background">#F3E5F5</color>
     <color name="cell_empty">#FFFFFF</color>
     <color name="cell_yes">#C8E6C9</color>
     <color name="cell_no">#FFCDD2</color>
     <color name="header_text">#FFFFFF</color>
-    <color name="header_background">#2196F3</color>
-    <color name="clue_item_text">#1A237E</color>
-    <color name="clue_item_background">#E3F2FD</color>
+    <color name="header_background">#7A36A0</color>
+    <color name="clue_item_text">#7A36A0</color>
+    <color name="clue_item_background">#F3E5F5</color>
     <color name="black">#000000</color>
 
     <!-- Level difficulty colors -->

@@ -5,24 +5,28 @@
     android:viewportWidth="200"
     android:viewportHeight="200">
     
-    <!-- Background circle -->
+    <!-- Background Circle -->
     <path
         android:fillColor="@color/primary"
         android:pathData="M100,100m-100,0a100,100 0,1 1,200 0a100,100 0,1 1,-200 0"/>
     
-    <!-- Grid lines -->
+    <!-- Grid Lines -->
     <path
-        android:strokeColor="@color/white"
+        android:strokeColor="#FFFFFF"
         android:strokeWidth="8"
+        android:strokeLineCap="round"
         android:pathData="M50,50h100v100h-100z"/>
     
     <path
-        android:strokeColor="@color/white"
+        android:strokeColor="#FFFFFF"
         android:strokeWidth="4"
-        android:pathData="M83.33,50v100M116.67,50v100M50,83.33h100M50,116.67h100"/>
-        
+        android:pathData="M83,50v100 M117,50v100 M50,83h100 M50,117h100"/>
+    
     <!-- Checkmark -->
     <path
-        android:fillColor="@color/white"
-        android:pathData="M75,100l15,15l35,-35"/>
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M65,100l20,20l50,-50"/>
 </vector> 
