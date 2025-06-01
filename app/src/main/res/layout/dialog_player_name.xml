@@ -4,16 +4,39 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:background="@color/white"
     android:padding="24dp">
 
+    <!-- Main Welcome Text -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Welcome Back! 🎯"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="#2196F3"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Subtitle -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Ready for more puzzles? ✨"
+        android:textSize="18sp"
+        android:textColor="#673AB7"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- Player Selection -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/playerNameInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/enter_player_name"
+        android:hint="Select your profile 👤"
         app:boxBackgroundColor="@android:color/transparent"
-        app:boxStrokeColor="@color/primary"
-        app:hintTextColor="@color/primary"
+        app:boxStrokeColor="#2196F3"
+        app:hintTextColor="#673AB7"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -21,8 +44,92 @@
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
             android:maxLines="1"
+            android:textSize="18sp"
             android:textColor="@color/text_primary"/>
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Player Stats Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="24dp">
+
+        <!-- Games Played -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginEnd="32dp">
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🎲"
+                android:textSize="24sp"/>
+            
+            <TextView
+                android:id="@+id/gamesPlayedText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Games: 0"
+                android:textColor="#673AB7"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <!-- Win Rate -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginStart="32dp">
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⭐"
+                android:textSize="24sp"/>
+            
+            <TextView
+                android:id="@+id/winRateText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wins: 0%"
+                android:textColor="#4CAF50"
+                android:textSize="14sp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="24dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/notYetButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NOT YET 🤔"
+            android:textColor="#673AB7"
+            android:layout_marginEnd="16dp"
+            style="@style/Widget.MaterialComponents.Button.TextButton"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/letsGoButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Let's Go! ✏️"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#2196F3"
+            app:cornerRadius="24dp"/>
+
+    </LinearLayout>
 
 </LinearLayout> 
