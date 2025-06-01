@@ -439,7 +439,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void handleGameCompletion() {
-        // Calculate stars based on time, moves, or other metrics
+        // Calculate stars based on moves
         earnedStars = calculateStars();
         
         // Update player progress only if this is their current level for this difficulty
@@ -452,8 +452,40 @@ public class GameActivity extends AppCompatActivity {
             dbHelper.updatePlayer(currentPlayer);
         }
 
-        // Show completion dialog
-        showCompletionDialog();
+        // Show the new fancy completion dialog
+        LevelCompleteDialog dialog = new LevelCompleteDialog(this);
+        
+        // Set the level number
+        dialog.setLevel(currentLevel);
+        
+        // Set earned stars
+        dialog.setStars(earnedStars);
+        
+        // Set performance text based on moves
+        String performanceText;
+        if (moveCount <= optimalMoves) {
+            performanceText = "Perfect! You solved it in " + moveCount + " moves!";
+        } else if (moveCount <= optimalMoves * 1.5) {
+            performanceText = "Great job! Completed in " + moveCount + " moves.";
+        } else {
+            performanceText = "Good effort! Try to use fewer moves next time.";
+        }
+        dialog.setPerformanceText(performanceText);
+        
+        // Set button click listeners
+        dialog.setOnDialogButtonClickListener(new LevelCompleteDialog.OnDialogButtonClickListener() {
+            @Override
+            public void onNextLevelClick() {
+                loadNextLevel();
+            }
+            
+            @Override
+            public void onBackToLevelsClick() {
+                finish();
+            }
+        });
+        
+        dialog.show();
     }
 
     private int calculateStars() {
@@ -472,28 +504,77 @@ public class GameActivity extends AppCompatActivity {
         return Math.max(1, stars); // Minimum 1 star for completing the level
     }
 
-    private void showCompletionDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.congratulations)
-                .setMessage(getString(R.string.level_completed_with_stars, earnedStars))
-                .setPositiveButton(R.string.next_level, (dialog, which) -> {
-                    if (currentLevel < LEVELS_PER_DIFFICULTY) {
-                        // Start next level with same difficulty
-                        Intent intent = new Intent(this, GameActivity.class);
-                        intent.putExtra("difficulty", currentDifficulty);
-                        intent.putExtra("level", currentLevel + 1);
-                        intent.putExtra("player_name", playerName);
-                        intent.putExtra("seed", generateSeed(currentDifficulty, currentLevel + 1));
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        // All levels completed for this difficulty
-                        Toast.makeText(this, getString(R.string.all_levels_completed), Toast.LENGTH_LONG).show();
-                        finish();
-                    }
-                })
-                .setNegativeButton(R.string.back_to_levels, (dialog, which) -> finish())
-                .setCancelable(false)
-                .show();
+    private void showLevelCompleteDialog() {
+        LevelCompleteDialog dialog = new LevelCompleteDialog(this);
+        
+        // Set the level number
+        dialog.setLevel(currentLevel);
+        
+        // Calculate stars based on performance (example logic)
+        int stars = calculateStars();
+        dialog.setStars(stars);
+        
+        // Set performance text based on stars
+        String performanceText = getPerformanceText(stars);
+        dialog.setPerformanceText(performanceText);
+        
+        // Set button click listeners
+        dialog.setOnDialogButtonClickListener(new LevelCompleteDialog.OnDialogButtonClickListener() {
+            @Override
+            public void onNextLevelClick() {
+                // Load next level
+                loadNextLevel();
+            }
+            
+            @Override
+            public void onBackToLevelsClick() {
+                // Return to level selection
+                finish();
+            }
+        });
+        
+        dialog.show();
+    }
+    
+    // Helper method to get performance text based on stars
+    private String getPerformanceText(int stars) {
+        switch (stars) {
+            case 3:
+                return "Perfect! You're a Logic Master!";
+            case 2:
+                return "Great job! Keep practicing!";
+            default:
+                return "Good effort! Try to improve your time and moves!";
+        }
+    }
+    
+    // Add this to your game completion check
+    private void checkGameCompletion() {
+        if (isLevelCompleted()) {
+            showLevelCompleteDialog();
+        }
+    }
+
+    // Add this method to handle loading the next level
+    private void loadNextLevel() {
+        if (currentLevel < LEVELS_PER_DIFFICULTY) {
+            // Start next level with same difficulty
+            Intent intent = new Intent(this, GameActivity.class);
+            intent.putExtra("difficulty", currentDifficulty);
+            intent.putExtra("level", currentLevel + 1);
+            intent.putExtra("player_name", playerName);
+            intent.putExtra("seed", generateSeed(currentDifficulty, currentLevel + 1));
+            startActivity(intent);
+            finish();
+        } else {
+            // All levels completed for this difficulty
+            Toast.makeText(this, getString(R.string.all_levels_completed), Toast.LENGTH_LONG).show();
+            finish();
+        }
+    }
+
+    // Add this method to check if the level is completed
+    private boolean isLevelCompleted() {
+        return gameLogic != null && gameLogic.isComplete() && gameLogic.checkSolution();
     }
 }

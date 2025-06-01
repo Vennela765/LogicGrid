@@ -27,6 +27,74 @@
     <string name="clue_format">%1$d. %2$s</string>
     <string name="back_button">Back</string>
     
+    <!-- Easy Level Clues -->
+    <string-array name="easy_clues">
+        <!-- Pets -->
+        <item>The cat likes to sleep in the sunny spot</item>
+        <item>The dog prefers to play in the garden</item>
+        <item>The fish swims happily in the water</item>
+        
+        <!-- Colors -->
+        <item>Red is next to Blue, but not Yellow</item>
+        <item>Green is between Yellow and Blue</item>
+        <item>Yellow shines brightest in the morning</item>
+        
+        <!-- Food -->
+        <item>The pizza is hot and fresh from the oven</item>
+        <item>The ice cream needs to stay cold</item>
+        <item>The sandwich is perfect for lunch time</item>
+        
+        <!-- Weather -->
+        <item>The sun makes rainbows after the rain</item>
+        <item>Snow falls only in winter</item>
+        <item>Stars twinkle in the night sky</item>
+    </string-array>
+
+    <!-- Medium Level Clues -->
+    <string-array name="medium_clues">
+        <!-- School Subjects -->
+        <item>Math class comes before Art, but after Science</item>
+        <item>Music is played when English class ends</item>
+        <item>History is the first class of the day</item>
+        <item>PE class needs the big gym space</item>
+        
+        <!-- Transportation -->
+        <item>The bicycle is faster than walking</item>
+        <item>The bus arrives after the train leaves</item>
+        <item>The car must stop at red lights</item>
+        <item>The airplane flies high above the clouds</item>
+        
+        <!-- Seasons -->
+        <item>Spring brings colorful flowers</item>
+        <item>Summer is perfect for beach days</item>
+        <item>Fall makes leaves change colors</item>
+        <item>Winter brings snowmen and hot cocoa</item>
+    </string-array>
+
+    <!-- Hard Level Clues -->
+    <string-array name="hard_clues">
+        <!-- Sports Tournament -->
+        <item>The basketball team plays in the big court</item>
+        <item>Soccer practice happens after swimming</item>
+        <item>Tennis matches need sunny weather</item>
+        <item>The running track is always open first</item>
+        <item>Volleyball nets are set up last</item>
+        
+        <!-- Birthday Party -->
+        <item>The cake comes after singing</item>
+        <item>Games are played before presents</item>
+        <item>Decorations go up first thing</item>
+        <item>Photos are taken right after cake</item>
+        <item>Dancing happens at the very end</item>
+        
+        <!-- Zoo Visit -->
+        <item>Lions roar before the monkeys wake</item>
+        <item>Penguins swim after lunch time</item>
+        <item>Elephants spray water in the afternoon</item>
+        <item>Giraffes eat leaves all morning long</item>
+        <item>Pandas rest during the busy noon hour</item>
+    </string-array>
+    
     <!-- Player Selection Strings -->
     <string name="select_player">Select Player</string>
     <string name="enter_player_name">Player Name</string>

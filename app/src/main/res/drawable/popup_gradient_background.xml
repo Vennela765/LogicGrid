@@ -1,10 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <gradient
-        android:angle="45"
-        android:endColor="#4CAF50"
-        android:centerColor="#2196F3"
-        android:startColor="#9C27B0"
-        android:type="linear" />
-    <corners android:radius="16dp" />
-</shape> 
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Base gradient layer -->
+    <item>
+        <shape>
+            <gradient
+                android:angle="225"
+                android:endColor="#DB6767"
+                android:centerColor="#3A2AC7"
+                android:startColor="#B13DBD"/>
+<!--                android:type="sweep" />-->
+
+            <corners android:radius="24dp" />
+        </shape>
+    </item>
+
+    <!-- Overlay gradient layer with transparency -->
+    <item>
+        <shape>
+            <gradient
+                android:centerX="0.7"
+                android:centerY="0.3"
+                android:endColor="#00FFFFFF"
+                android:gradientRadius="95%p"
+                android:startColor="#40FFFFFF"
+                android:type="radial" />
+            <corners android:radius="24dp" />
+        </shape>
+    </item>
+
+    <!-- Accent highlights -->
+    <item android:left="3dp" android:top="3dp" android:right="3dp">
+        <shape>
+            <gradient
+                android:angle="315"
+                android:centerColor="#336C5CE7"
+                android:endColor="#00A8E6"
+                android:startColor="#33A3A1F7"
+                android:type="linear" />
+            <corners
+                android:topLeftRadius="22dp"
+                android:topRightRadius="22dp" />
+        </shape>
+    </item>
+
+    <!-- Subtle edge glow -->
+    <item android:bottom="2dp">
+        <shape>
+            <gradient
+                android:angle="90"
+                android:centerY="0.8"
+                android:endColor="#0DFFFFFF"
+                android:startColor="#33FFFFFF"
+                android:type="linear" />
+            <corners android:radius="24dp" />
+        </shape>
+    </item>
+</layer-list> 
