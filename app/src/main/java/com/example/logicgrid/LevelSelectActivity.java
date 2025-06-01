@@ -148,15 +148,15 @@ public class LevelSelectActivity extends AppCompatActivity {
             holder.levelButton.setText(levelText);
             holder.levelButton.setBackgroundTintList(android.content.res.ColorStateList.valueOf(buttonColor));
             
-            // Show star for completed levels
-            if (level < currentPlayer.getCurrentLevel()) {
+            // Show star for completed levels in this difficulty
+            if (level < currentPlayer.getCurrentLevel(difficulty)) {
                 holder.starIcon.setVisibility(View.VISIBLE);
             } else {
                 holder.starIcon.setVisibility(View.GONE);
             }
             
-            // Enable/disable button based on level availability
-            holder.levelButton.setEnabled(level <= currentPlayer.getCurrentLevel());
+            // Enable/disable button based on level availability for this difficulty
+            holder.levelButton.setEnabled(level <= currentPlayer.getCurrentLevel(difficulty));
             
             // Set click listener
             holder.levelButton.setOnClickListener(v -> listener.onLevelSelected(difficulty, level));

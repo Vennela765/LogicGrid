@@ -101,7 +101,7 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
 
     private void updatePlayersList() {
         List<Player> players = dbHelper.getAllPlayers();
-        players.sort((p1, p2) -> p2.getCurrentLevel() - p1.getCurrentLevel());
+        players.sort((p1, p2) -> p2.getHighestLevel() - p1.getHighestLevel());
         PlayersAdapter adapter = new PlayersAdapter(players, this);
         playersRecyclerView.setAdapter(adapter);
     }

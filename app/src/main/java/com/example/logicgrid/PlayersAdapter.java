@@ -35,7 +35,9 @@ public class PlayersAdapter extends RecyclerView.Adapter<PlayersAdapter.ViewHold
         Player player = players.get(position);
         holder.rankText.setText(String.valueOf(position + 1));
         holder.nameText.setText(player.getName());
-        holder.levelText.setText(String.format("Level %d", player.getCurrentLevel()));
+        holder.levelText.setText(String.format("Level %d - Stars: %d", 
+            player.getHighestLevel(), 
+            player.getTotalStars()));
         
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {

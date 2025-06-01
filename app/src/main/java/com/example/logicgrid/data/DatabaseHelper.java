@@ -17,13 +17,17 @@ import java.util.Locale;
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
     public static final String DATABASE_NAME = "LogicGrid.db";
-    private static final int DATABASE_VERSION = 1; // Keep this at 1 unless you need to upgrade schema
+    private static final int DATABASE_VERSION = 2; // Increased version for schema update
 
     private static final String TABLE_PLAYERS = "players";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_NAME = "name";
-    private static final String COLUMN_LEVEL = "level";
-    private static final String COLUMN_STARS = "stars";
+    private static final String COLUMN_EASY_LEVEL = "easy_level";
+    private static final String COLUMN_MEDIUM_LEVEL = "medium_level";
+    private static final String COLUMN_HARD_LEVEL = "hard_level";
+    private static final String COLUMN_EASY_STARS = "easy_stars";
+    private static final String COLUMN_MEDIUM_STARS = "medium_stars";
+    private static final String COLUMN_HARD_STARS = "hard_stars";
 
     private Context context;
     private SQLiteDatabase mDatabase;
@@ -48,7 +52,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         try {
             Log.i(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion);
-            handleDatabaseUpgrade(db, oldVersion, newVersion);
+            // Drop the old table and create new one
+            dropTables(db);
+            createTables(db);
         } catch (Exception e) {
             Log.e(TAG, "Error upgrading database", e);
             throw e;
@@ -122,7 +128,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private void handleDatabaseUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Backup existing data using the provided db instance
-        List<Player> players = getAllPlayers(db); // Pass db instance
+        List<Player> players = getAllPlayers(); // Remove db parameter
         
         // Drop and recreate tables using the provided db instance
         dropTables(db);
@@ -132,8 +138,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         for (Player player : players) {
             ContentValues values = new ContentValues();
             values.put(COLUMN_NAME, player.getName().trim());
-            values.put(COLUMN_LEVEL, player.getCurrentLevel());
-            values.put(COLUMN_STARS, player.getStarsEarned());
+            values.put(COLUMN_EASY_LEVEL, player.getCurrentLevel("EASY"));
+            values.put(COLUMN_MEDIUM_LEVEL, player.getCurrentLevel("MEDIUM"));
+            values.put(COLUMN_HARD_LEVEL, player.getCurrentLevel("HARD"));
+            values.put(COLUMN_EASY_STARS, player.getStarsEarned("EASY"));
+            values.put(COLUMN_MEDIUM_STARS, player.getStarsEarned("MEDIUM"));
+            values.put(COLUMN_HARD_STARS, player.getStarsEarned("HARD"));
             db.insert(TABLE_PLAYERS, null, values);
         }
         Log.i(TAG, "Database upgrade/downgrade complete from v" + oldVersion + " to v" + newVersion);
@@ -143,8 +153,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String createTable = "CREATE TABLE IF NOT EXISTS " + TABLE_PLAYERS + " ("
                 + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_NAME + " TEXT UNIQUE NOT NULL, "
-                + COLUMN_LEVEL + " INTEGER DEFAULT 1, "
-                + COLUMN_STARS + " INTEGER DEFAULT 0)";
+                + COLUMN_EASY_LEVEL + " INTEGER DEFAULT 1, "
+                + COLUMN_MEDIUM_LEVEL + " INTEGER DEFAULT 1, "
+                + COLUMN_HARD_LEVEL + " INTEGER DEFAULT 1, "
+                + COLUMN_EASY_STARS + " INTEGER DEFAULT 0, "
+                + COLUMN_MEDIUM_STARS + " INTEGER DEFAULT 0, "
+                + COLUMN_HARD_STARS + " INTEGER DEFAULT 0)";
         db.execSQL(createTable);
     }
 
@@ -160,15 +174,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_NAME, player.getName().trim());
-        values.put(COLUMN_LEVEL, player.getCurrentLevel());
-        values.put(COLUMN_STARS, player.getStarsEarned());
+        values.put(COLUMN_EASY_LEVEL, player.getCurrentLevel("EASY"));
+        values.put(COLUMN_MEDIUM_LEVEL, player.getCurrentLevel("MEDIUM"));
+        values.put(COLUMN_HARD_LEVEL, player.getCurrentLevel("HARD"));
+        values.put(COLUMN_EASY_STARS, player.getStarsEarned("EASY"));
+        values.put(COLUMN_MEDIUM_STARS, player.getStarsEarned("MEDIUM"));
+        values.put(COLUMN_HARD_STARS, player.getStarsEarned("HARD"));
         
         try {
             long result = db.insertWithOnConflict(TABLE_PLAYERS, null, values, SQLiteDatabase.CONFLICT_IGNORE);
             if (result == -1) {
                 Log.w(TAG, "Failed to add player (conflict or error): " + player.getName());
-                // Optional: query to check if player exists to differentiate conflict from other errors
-                // For now, we assume CONFLICT_IGNORE handles unique constraint violations silently
             } else {
                 Log.d(TAG, "Player added successfully: " + player.getName());
             }
@@ -176,7 +192,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.e(TAG, "Error adding player", e);
             throw e;
         }
-        // Note: We don't close db here as it's managed by getWritableDatabase and close() method of DatabaseHelper
     }
 
     public Player getPlayerByName(String name) {
@@ -189,20 +204,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Player player = null;
         try {
             cursor = db.query(TABLE_PLAYERS,
-                    new String[]{COLUMN_ID, COLUMN_NAME, COLUMN_LEVEL, COLUMN_STARS}, // Added COLUMN_ID for completeness
+                    new String[]{COLUMN_NAME, COLUMN_EASY_LEVEL, COLUMN_MEDIUM_LEVEL, COLUMN_HARD_LEVEL,
+                            COLUMN_EASY_STARS, COLUMN_MEDIUM_STARS, COLUMN_HARD_STARS},
                     COLUMN_NAME + "=?",
                     new String[]{name.trim()},
                     null, null, null);
 
             if (cursor != null && cursor.moveToFirst()) {
                 player = new Player(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)));
-                player.setCurrentLevel(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_LEVEL)));
-                player.setStarsEarned(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STARS)));
-                // player.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID))); // If Player class has setId
+                player.setCurrentLevel("EASY", cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_EASY_LEVEL)));
+                player.setCurrentLevel("MEDIUM", cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MEDIUM_LEVEL)));
+                player.setCurrentLevel("HARD", cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_HARD_LEVEL)));
+                player.setStarsEarned("EASY", cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_EASY_STARS)));
+                player.setStarsEarned("MEDIUM", cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MEDIUM_STARS)));
+                player.setStarsEarned("HARD", cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_HARD_STARS)));
             }
         } catch (Exception e) {
             Log.e(TAG, "Error getting player by name: " + name, e);
-            // Not re-throwing, returning null if player not found or error occurs
         } finally {
             if (cursor != null) {
                 cursor.close();
@@ -211,19 +229,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return player;
     }
 
-    // Public method that uses the managed mDatabase instance
     public List<Player> getAllPlayers() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        return getAllPlayers(db);
-    }
-
-    // Private helper method that takes a SQLiteDatabase instance
-    private List<Player> getAllPlayers(SQLiteDatabase db) {
         List<Player> players = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = null;
         try {
-            String selectQuery = "SELECT * FROM " + TABLE_PLAYERS +
-                " ORDER BY " + COLUMN_LEVEL + " DESC, " + COLUMN_STARS + " DESC";
+            String selectQuery = "SELECT * FROM " + TABLE_PLAYERS;
             cursor = db.rawQuery(selectQuery, null);
 
             if (cursor != null && cursor.moveToFirst()) {
@@ -231,15 +242,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     Player player = new Player(
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME))
                     );
-                    player.setCurrentLevel(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_LEVEL)));
-                    player.setStarsEarned(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STARS)));
-                    // player.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID))); // If Player class has setId
+                    player.setCurrentLevel("EASY", cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_EASY_LEVEL)));
+                    player.setCurrentLevel("MEDIUM", cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MEDIUM_LEVEL)));
+                    player.setCurrentLevel("HARD", cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_HARD_LEVEL)));
+                    player.setStarsEarned("EASY", cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_EASY_STARS)));
+                    player.setStarsEarned("MEDIUM", cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MEDIUM_STARS)));
+                    player.setStarsEarned("HARD", cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_HARD_STARS)));
                     players.add(player);
                 } while (cursor.moveToNext());
             }
         } catch (Exception e) {
             Log.e(TAG, "Error getting all players", e);
-            // Not re-throwing, returning empty list or list collected so far
         } finally {
             if (cursor != null) {
                 cursor.close();
@@ -255,8 +268,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COLUMN_LEVEL, player.getCurrentLevel());
-        values.put(COLUMN_STARS, player.getStarsEarned());
+        values.put(COLUMN_EASY_LEVEL, player.getCurrentLevel("EASY"));
+        values.put(COLUMN_MEDIUM_LEVEL, player.getCurrentLevel("MEDIUM"));
+        values.put(COLUMN_HARD_LEVEL, player.getCurrentLevel("HARD"));
+        values.put(COLUMN_EASY_STARS, player.getStarsEarned("EASY"));
+        values.put(COLUMN_MEDIUM_STARS, player.getStarsEarned("MEDIUM"));
+        values.put(COLUMN_HARD_STARS, player.getStarsEarned("HARD"));
         
         try {
             int rowsAffected = db.update(TABLE_PLAYERS, values,
@@ -273,9 +290,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void updatePlayerLevel(String playerName, int newLevel) {
+    public void updatePlayerLevel(String playerName, String difficulty, int newLevel) {
         if (playerName == null || playerName.trim().isEmpty()) {
             throw new IllegalArgumentException("Player name cannot be null or empty");
+        }
+        if (difficulty == null || difficulty.trim().isEmpty()) {
+            throw new IllegalArgumentException("Difficulty cannot be null or empty");
         }
         if (newLevel < 1) {
             throw new IllegalArgumentException("Level must be greater than 0");
@@ -283,7 +303,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COLUMN_LEVEL, newLevel);
+        values.put(difficulty + "_level", newLevel);
         
         try {
             int rowsAffected = db.update(TABLE_PLAYERS, values,

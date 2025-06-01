@@ -40,7 +40,7 @@ public class RecentPlayersAdapter extends RecyclerView.Adapter<RecentPlayersAdap
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Player player = players.get(position);
         holder.textView.setText(String.format("%s (Level %d)", 
-            player.getName(), player.getCurrentLevel()));
+            player.getName(), player.getHighestLevel()));
         
         // Set background selector for ripple effect
         holder.textView.setBackgroundResource(android.R.drawable.list_selector_background);

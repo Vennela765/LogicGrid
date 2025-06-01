@@ -69,8 +69,8 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
         public void bind(Player player) {
             text1.setText(player.getName());
             text2.setText(String.format("Level: %d - Stars: %d", 
-                    player.getCurrentLevel(), 
-                    player.getStarsEarned()));
+                    player.getHighestLevel(), 
+                    player.getTotalStars()));
         }
     }
 } 

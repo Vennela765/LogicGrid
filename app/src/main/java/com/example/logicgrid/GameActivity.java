@@ -318,20 +318,8 @@ public class GameActivity extends AppCompatActivity {
             cell.setGravity(android.view.Gravity.CENTER);
             cell.setTextSize(16);
             
-            // Add animated star drawable to empty cells using AppCompatResources
-            try {
-                android.graphics.drawable.Drawable starDrawable = androidx.appcompat.content.res.AppCompatResources
-                    .getDrawable(this, R.drawable.star_animation);
-                if (starDrawable != null) {
-                    cell.setForeground(starDrawable);
-                    if (starDrawable instanceof android.graphics.drawable.Animatable) {
-                        ((android.graphics.drawable.Animatable) starDrawable).start();
-                    }
-                }
-            } catch (Exception e) {
-                // Fallback in case animation fails
-                cell.setForeground(null);
-            }
+            // Remove star drawable from regular cells
+            cell.setForeground(null);
             
             gridLayout.addView(cell);
             return (T) cell;
@@ -368,20 +356,8 @@ public class GameActivity extends AppCompatActivity {
             default:
                 cell.setText("");
                 shape.setColor(ContextCompat.getColor(this, R.color.cell_empty));
-                // Add animated star drawable using AppCompatResources
-                try {
-                    android.graphics.drawable.Drawable starDrawable = androidx.appcompat.content.res.AppCompatResources
-                        .getDrawable(this, R.drawable.star_animation);
-                    if (starDrawable != null) {
-                        cell.setForeground(starDrawable);
-                        if (starDrawable instanceof android.graphics.drawable.Animatable) {
-                            ((android.graphics.drawable.Animatable) starDrawable).start();
-                        }
-                    }
-                } catch (Exception e) {
-                    // Fallback in case animation fails
-                    cell.setForeground(null);
-                }
+                // Remove any star drawable that might be set
+                cell.setForeground(null);
                 break;
         }
         
@@ -466,14 +442,15 @@ public class GameActivity extends AppCompatActivity {
         // Calculate stars based on time, moves, or other metrics
         earnedStars = calculateStars();
         
-        // Update player progress
-        if (currentLevel >= currentPlayer.getCurrentLevel()) {
-            currentPlayer.setCurrentLevel(currentLevel + 1);
+        // Update player progress only if this is their current level for this difficulty
+        if (currentLevel == currentPlayer.getCurrentLevel(currentDifficulty)) {
+            currentPlayer.setCurrentLevel(currentDifficulty, currentLevel + 1);
+            int currentStars = currentPlayer.getStarsEarned(currentDifficulty);
+            currentPlayer.setStarsEarned(currentDifficulty, currentStars + earnedStars);
+            
+            // Save to database
+            dbHelper.updatePlayer(currentPlayer);
         }
-        currentPlayer.setStarsEarned(currentPlayer.getStarsEarned() + earnedStars);
-        
-        // Save to database
-        dbHelper.updatePlayer(currentPlayer);
 
         // Show completion dialog
         showCompletionDialog();
