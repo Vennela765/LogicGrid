@@ -325,4 +325,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Date date = new Date();
         return dateFormat.format(date);
     }
+
+    // Add this method to get all player names as an array
+    public String[] getAllPlayerNames() {
+        List<Player> players = getAllPlayers();
+        String[] names = new String[players.size()];
+        for (int i = 0; i < players.size(); i++) {
+            names[i] = players.get(i).getName();
+        }
+        return names;
+    }
 } 

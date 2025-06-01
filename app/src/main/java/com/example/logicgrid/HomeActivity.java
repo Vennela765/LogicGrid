@@ -1,7 +1,9 @@
 package com.example.logicgrid;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.EditText;
@@ -37,13 +39,17 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
     }
 
     private void setupViews() {
-        // Setup instruction button
-        ImageButton instructionsButton = findViewById(R.id.instructionsButton);
-        instructionsButton.setOnClickListener(v -> showHowToPlayDialog());
-
-        // Setup play button
+        // Initialize buttons
         MaterialButton playButton = findViewById(R.id.playButton);
-        playButton.setOnClickListener(v -> showPlayerNameDialog());
+        MaterialButton newPlayerButton = findViewById(R.id.newPlayerButton);
+        MaterialButton existingPlayerButton = findViewById(R.id.existingPlayerButton);
+
+        // Hide the main play button as we're using new/existing player buttons
+        playButton.setVisibility(View.GONE);
+
+        // Set click listeners
+        newPlayerButton.setOnClickListener(v -> showNewPlayerDialog());
+        existingPlayerButton.setOnClickListener(v -> showExistingPlayerDialog());
 
         // Setup leaderboard
         leaderboardOverlay = findViewById(R.id.leaderboardOverlay);
@@ -58,33 +64,53 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
         updatePlayersList();
     }
 
-    private void showPlayerNameDialog() {
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_player_name, null);
-        TextInputLayout textInputLayout = dialogView.findViewById(R.id.playerNameInput);
-        EditText playerNameEditText = textInputLayout.getEditText();
+    private void showNewPlayerDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_new_player, null);
+        EditText nameInput = dialogView.findViewById(R.id.nameInput);
 
-        new MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.enter_name_prompt)
-            .setView(dialogView)
-            .setPositiveButton(R.string.start_game, (dialog, which) -> {
-                String playerName = playerNameEditText != null ? playerNameEditText.getText().toString().trim() : "";
-                if (!playerName.isEmpty()) {
-                    Player player = dbHelper.getPlayerByName(playerName);
-                    if (player == null) {
+        new AlertDialog.Builder(this)
+                .setTitle("Enter Your Name")
+                .setView(dialogView)
+                .setPositiveButton("Start Playing", (dialog, which) -> {
+                    String playerName = nameInput.getText().toString().trim();
+                    if (!playerName.isEmpty()) {
                         // Create new player
-                        player = new Player(playerName);
-                        dbHelper.addPlayer(player);
+                        Player newPlayer = new Player(playerName);
+                        dbHelper.addPlayer(newPlayer);
+                        startGame(playerName);
+                    } else {
+                        Toast.makeText(this, "Please enter a name", Toast.LENGTH_SHORT).show();
                     }
-                    startLevelSelect(playerName);
-                } else {
-                    Toast.makeText(this, R.string.invalid_name, Toast.LENGTH_SHORT).show();
-                }
-            })
-            .setNegativeButton(android.R.string.cancel, null)
-            .show();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
-    private void startLevelSelect(String playerName) {
+    private void showExistingPlayerDialog() {
+        // Get all players from database
+        String[] players = dbHelper.getAllPlayerNames();
+        
+        if (players == null || players.length == 0) {
+            new AlertDialog.Builder(this)
+                .setTitle("No Existing Players")
+                .setMessage("There are no existing players. Would you like to create a new player?")
+                .setPositiveButton("Create New Player", (dialog, which) -> showNewPlayerDialog())
+                .setNegativeButton("Cancel", null)
+                .show();
+            return;
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Select Your Profile")
+                .setItems(players, (dialog, which) -> {
+                    String selectedPlayer = players[which];
+                    startGame(selectedPlayer);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void startGame(String playerName) {
         Intent intent = new Intent(this, LevelSelectActivity.class);
         intent.putExtra("player_name", playerName);
         startActivity(intent);
@@ -106,14 +132,6 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
         playersRecyclerView.setAdapter(adapter);
     }
 
-    private void showHowToPlayDialog() {
-        new AlertDialog.Builder(this)
-            .setTitle(R.string.how_to_play)
-            .setMessage(R.string.how_to_play_instructions)
-            .setPositiveButton(android.R.string.ok, null)
-            .show();
-    }
-
     @Override
     public void onBackPressed() {
         if (leaderboardOverlay.getVisibility() == View.VISIBLE) {
@@ -126,6 +144,6 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
     @Override
     public void onPlayerClick(Player player) {
         hideLeaderboard();
-        startLevelSelect(player.getName());
+        startGame(player.getName());
     }
 } 
