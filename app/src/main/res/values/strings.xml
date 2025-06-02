@@ -130,4 +130,16 @@
     <string name="ready_puzzle">Ready to solve puzzles? 🧩</string>
     <string name="not_yet_button">NOT YET 🤔</string>
     <string name="lets_go_button">Let\'s Go! ✏️</string>
+
+    <!-- Player Selection Dialog -->
+    <string name="no_players_title">No Existing Players</string>
+    <string name="no_players_message">There are no existing players. Would you like to create a new player?</string>
+    <string name="create_new_player">Create New Player</string>
+    <string name="delete">Delete</string>
+    <string name="delete_player_title">Delete Player</string>
+    <string name="delete_player_message">Are you sure you want to delete %s?</string>
+    <string name="player_deleted">Player deleted</string>
+    <string name="select_valid_profile">Please select a valid profile</string>
+    <string name="error_loading_dialog">Error loading dialog. Please try again.</string>
+    <string name="error_player_selection">Unable to show player selection. Please try again.</string>
 </resources>

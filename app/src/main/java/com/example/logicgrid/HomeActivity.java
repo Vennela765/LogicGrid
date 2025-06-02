@@ -1,38 +1,33 @@
 package com.example.logicgrid;
 
-import androidx.activity.OnBackPressedCallback;
-//import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageButton;
-import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
-//import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-//import com.google.android.material.textfield.TextInputLayout;
 import com.example.logicgrid.data.DatabaseHelper;
 import com.example.logicgrid.data.Player;
 import java.util.List;
 import android.widget.TextView;
-import com.google.android.material.textfield.TextInputEditText;
-import android.widget.ArrayAdapter;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
-import android.view.ViewGroup;
+import java.util.Locale;
+import android.widget.EditText;
+import androidx.activity.OnBackPressedCallback;
 
 public class HomeActivity extends AppCompatActivity implements PlayersAdapter.OnPlayerClickListener {
-    private DrawerLayout drawerLayout;
     private CardView leaderboardOverlay;
     private RecyclerView playersRecyclerView;
     private DatabaseHelper dbHelper;
+    private PlayerDropdownAdapter dropdownAdapter;
+    private PlayersAdapter playersAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +36,19 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
 
         dbHelper = new DatabaseHelper(this);
         setupViews();
-
+        
+        // Setup back press handling
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (leaderboardOverlay.getVisibility() == View.VISIBLE) {
+                    hideLeaderboard();
+                } else {
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            }
+        });
     }
 
     private void setupViews() {
@@ -51,13 +58,20 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
         MaterialButton existingPlayerButton = findViewById(R.id.existingPlayerButton);
         ImageButton instructionsButton = findViewById(R.id.instructionsButton);
 
-        // Hide the main play button as we're using new/existing player buttons
-        playButton.setVisibility(View.GONE);
+        if (playButton != null) {
+            playButton.setVisibility(View.GONE);
+        }
 
         // Set click listeners
-        newPlayerButton.setOnClickListener(v -> showNewPlayerDialog());
-        existingPlayerButton.setOnClickListener(v -> showExistingPlayerDialog());
-        instructionsButton.setOnClickListener(v -> showInstructionsDialog());
+        if (newPlayerButton != null) {
+            newPlayerButton.setOnClickListener(v -> showNewPlayerDialog());
+        }
+        if (existingPlayerButton != null) {
+            existingPlayerButton.setOnClickListener(v -> showExistingPlayerDialog());
+        }
+        if (instructionsButton != null) {
+            instructionsButton.setOnClickListener(v -> showInstructionsDialog());
+        }
 
         // Setup leaderboard
         leaderboardOverlay = findViewById(R.id.leaderboardOverlay);
@@ -65,9 +79,15 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
         ImageButton closeLeaderboardButton = findViewById(R.id.closeLeaderboardButton);
         playersRecyclerView = findViewById(R.id.playersRecyclerView);
 
-        playersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        fingerprintButton.setOnClickListener(v -> showLeaderboard());
-        closeLeaderboardButton.setOnClickListener(v -> hideLeaderboard());
+        if (playersRecyclerView != null) {
+            playersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        }
+        if (fingerprintButton != null) {
+            fingerprintButton.setOnClickListener(v -> showLeaderboard());
+        }
+        if (closeLeaderboardButton != null) {
+            closeLeaderboardButton.setOnClickListener(v -> hideLeaderboard());
+        }
 
         updatePlayersList();
     }
@@ -111,64 +131,86 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
         
         if (players == null || players.isEmpty()) {
             new AlertDialog.Builder(this)
-                .setTitle("No Existing Players")
-                .setMessage("There are no existing players. Would you like to create a new player?")
-                .setPositiveButton("Create New Player", (dialog, which) -> showNewPlayerDialog())
-                .setNegativeButton("Cancel", null)
+                .setTitle(R.string.no_players_title)
+                .setMessage(R.string.no_players_message)
+                .setPositiveButton(R.string.create_new_player, (dialog, which) -> showNewPlayerDialog())
+                .setNegativeButton(R.string.cancel, null)
                 .show();
             return;
         }
 
         try {
-            // Create and show dialog with custom layout
+            View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_player_name, null, false);
             AlertDialog dialog = new AlertDialog.Builder(this)
-                    .setView(LayoutInflater.from(this).inflate(R.layout.dialog_player_name, null))
+                    .setView(dialogView)
                     .create();
 
             // Remove the default title
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.show();
 
-            // Get references to views
-            TextView welcomeTitle = dialog.findViewById(R.id.welcomeTitle);
-            TextView readySubtitle = dialog.findViewById(R.id.readySubtitle);
-            MaterialAutoCompleteTextView nameInput = dialog.findViewById(R.id.nameInput);
-            MaterialButton notYetButton = dialog.findViewById(R.id.notYetButton);
-            MaterialButton letsGoButton = dialog.findViewById(R.id.letsGoButton);
-            TextView gamesPlayedText = dialog.findViewById(R.id.gamesPlayedText);
-            TextView winRateText = dialog.findViewById(R.id.winRateText);
-            TextView diceIcon = dialog.findViewById(R.id.diceIcon);
+            // Get references to views with null checks
+            TextView welcomeTitle = dialogView.findViewById(R.id.welcomeTitle);
+            TextView readySubtitle = dialogView.findViewById(R.id.readySubtitle);
+            MaterialAutoCompleteTextView nameInput = dialogView.findViewById(R.id.nameInput);
+            MaterialButton notYetButton = dialogView.findViewById(R.id.notYetButton);
+            MaterialButton letsGoButton = dialogView.findViewById(R.id.letsGoButton);
+            TextView gamesPlayedText = dialogView.findViewById(R.id.gamesPlayedText);
+            TextView winRateText = dialogView.findViewById(R.id.winRateText);
+            TextView diceIcon = dialogView.findViewById(R.id.diceIcon);
+
+            if (nameInput == null || notYetButton == null || letsGoButton == null) {
+                dialog.dismiss();
+                Toast.makeText(this, R.string.error_loading_dialog, Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             // Sort players by highest level
             players.sort((p1, p2) -> p2.getHighestLevel() - p1.getHighestLevel());
 
-            // Create adapter for player names (just names, no levels)
-            String[] playerNames = players.stream()
-                    .map(Player::getName)
-                    .toArray(String[]::new);
-            
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(
+            // Create the final adapter with delete functionality
+            final PlayerDropdownAdapter adapter = new PlayerDropdownAdapter(
                 this,
-                android.R.layout.simple_dropdown_item_1line,
-                playerNames
-            ) {
-                @Override
-                public View getView(int position, View convertView, ViewGroup parent) {
-                    TextView view = (TextView) super.getView(position, convertView, parent);
-                    view.setTextColor(0xFF9E9E9E); // Light grey color
-                    view.setBackgroundColor(0xFFFFFFFF);
-                    return view;
+                players,
+                player -> {
+                    // Show confirmation dialog
+                    new AlertDialog.Builder(this)
+                        .setTitle(R.string.delete_player_title)
+                        .setMessage(String.format(Locale.getDefault(), getString(R.string.delete_player_message), player.getName()))
+                        .setPositiveButton(R.string.delete, (deleteDialog, which) -> {
+                            // Delete player from database
+                            dbHelper.deletePlayer(player.getName());
+                            
+                            // Remove from list
+                            players.remove(player);
+                            
+                            // Update adapters
+                            if (dropdownAdapter != null) {
+                                dropdownAdapter.notifyDataSetChanged();
+                            }
+                            if (playersAdapter != null) {
+                                playersAdapter.updatePlayers(players);
+                                playersAdapter.notifyDataSetChanged();
+                            }
+                            
+                            // Clear selection and reset stats
+                            nameInput.setText("", false);
+                            updatePlayerStats(null, diceIcon, gamesPlayedText, winRateText);
+                            
+                            // Show toast
+                            Toast.makeText(this, R.string.player_deleted, Toast.LENGTH_SHORT).show();
+                            
+                            // If no players left, close dialog and show new player dialog
+                            if (players.isEmpty()) {
+                                dialog.dismiss();
+                                showNewPlayerDialog();
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, null)
+                        .show();
                 }
-
-                @Override
-                public View getDropDownView(int position, View convertView, ViewGroup parent) {
-                    TextView view = (TextView) super.getDropDownView(position, convertView, parent);
-                    view.setTextColor(0xFF9E9E9E); // Light grey color
-                    view.setBackgroundColor(0xFFFFFFFF);
-                    view.setPadding(48, 32, 48, 32);
-                    return view;
-                }
-            };
+            );
+            
             nameInput.setAdapter(adapter);
             
             // Clear the initial text
@@ -180,8 +222,12 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
             }
 
             // Customize dialog text
-            welcomeTitle.setText("Welcome Back!");
-            readySubtitle.setText("Select your profile to continue");
+            if (welcomeTitle != null) {
+                welcomeTitle.setText(String.format(Locale.getDefault(), getString(R.string.welcome_back), nameInput.getText().toString()));
+            }
+            if (readySubtitle != null) {
+                readySubtitle.setText(R.string.ready_subtitle);
+            }
 
             // Set click listeners
             notYetButton.setOnClickListener(v -> dialog.dismiss());
@@ -198,12 +244,12 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
                     startGame(playerName);
                     dialog.dismiss();
                 } else {
-                    Toast.makeText(this, "Please select a valid profile", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.select_valid_profile, Toast.LENGTH_SHORT).show();
                 }
             });
 
         } catch (Exception e) {
-            Toast.makeText(this, "Unable to show player selection. Please try again.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error_player_selection, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -214,14 +260,14 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
                 int totalStars = player.getTotalStars();
                 
                 // Update games played (orange circle)
-                gamesPlayedText.setText(String.format("Games: %d", gamesPlayed));
+                gamesPlayedText.setText(String.format(Locale.getDefault(), getString(R.string.games_played), gamesPlayed));
                 
                 // Update total stars (blue circle)
-                winRateText.setText(String.format("Wins: %d⭐", totalStars));
+                winRateText.setText(String.format(Locale.getDefault(), getString(R.string.win_rate), totalStars));
             } else {
                 // Reset stats when no player is selected
-                gamesPlayedText.setText("Games: 0");
-                winRateText.setText("Wins: 0⭐");
+                gamesPlayedText.setText(getString(R.string.games_played, 0));
+                winRateText.setText(getString(R.string.win_rate, 0));
             }
         }
     }
@@ -233,19 +279,34 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
     }
 
     private void showLeaderboard() {
-        leaderboardOverlay.setVisibility(View.VISIBLE);
-        updatePlayersList();
+        if (leaderboardOverlay != null) {
+            leaderboardOverlay.setVisibility(View.VISIBLE);
+            updatePlayersList();
+        }
     }
 
     private void hideLeaderboard() {
-        leaderboardOverlay.setVisibility(View.GONE);
+        if (leaderboardOverlay != null) {
+            leaderboardOverlay.setVisibility(View.GONE);
+        }
     }
 
     private void updatePlayersList() {
+        if (playersRecyclerView == null) {
+            return;
+        }
+        
         List<Player> players = dbHelper.getAllPlayers();
-        players.sort((p1, p2) -> p2.getHighestLevel() - p1.getHighestLevel());
-        PlayersAdapter adapter = new PlayersAdapter(players, this);
-        playersRecyclerView.setAdapter(adapter);
+        if (players != null) {
+            players.sort((p1, p2) -> p2.getHighestLevel() - p1.getHighestLevel());
+            if (playersAdapter == null) {
+                playersAdapter = new PlayersAdapter(players, this);
+                playersRecyclerView.setAdapter(playersAdapter);
+            } else {
+                playersAdapter.updatePlayers(players);
+                playersAdapter.notifyDataSetChanged();
+            }
+        }
     }
 
     private void showInstructionsDialog() {
@@ -259,15 +320,6 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
         MaterialButton closeButton = dialog.findViewById(R.id.closeButton);
         if (closeButton != null) {
             closeButton.setOnClickListener(v -> dialog.dismiss());
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (leaderboardOverlay.getVisibility() == View.VISIBLE) {
-            hideLeaderboard();
-        } else {
-            super.onBackPressed();
         }
     }
 

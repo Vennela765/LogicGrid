@@ -335,4 +335,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return names;
     }
+
+    public void deletePlayer(String playerName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        try {
+            db.delete(TABLE_PLAYERS, COLUMN_NAME + "=?", new String[]{playerName});
+        } catch (Exception e) {
+            Log.e("DatabaseHelper", "Error deleting player: " + e.getMessage());
+        }
+    }
 } 

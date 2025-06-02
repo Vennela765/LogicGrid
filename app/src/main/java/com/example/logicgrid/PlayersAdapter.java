@@ -10,7 +10,7 @@ import com.example.logicgrid.data.Player;
 import java.util.List;
 
 public class PlayersAdapter extends RecyclerView.Adapter<PlayersAdapter.ViewHolder> {
-    private final List<Player> players;
+    private List<Player> players;
     private final OnPlayerClickListener listener;
 
     public interface OnPlayerClickListener {
@@ -49,6 +49,10 @@ public class PlayersAdapter extends RecyclerView.Adapter<PlayersAdapter.ViewHold
     @Override
     public int getItemCount() {
         return players.size();
+    }
+
+    public void updatePlayers(List<Player> newPlayers) {
+        this.players = newPlayers;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
