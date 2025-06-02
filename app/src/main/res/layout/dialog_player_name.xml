@@ -36,9 +36,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/select_profile"
-        app:boxBackgroundColor="@android:color/transparent"
-        app:boxStrokeColor="@color/primary"
-        app:hintTextColor="@color/accent"
+        app:boxBackgroundColor="#FFFFFF"
+        app:boxStrokeColor="#4A4B5E"
+        app:hintTextColor="#000000"
+        android:textColorHint="#FFFFFF"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
         <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -49,7 +50,9 @@
             android:maxLines="1"
             android:textSize="18sp"
             android:focusable="false"
-            android:textColor="@color/black"/>
+            android:textColor="#000000"
+            android:popupBackground="#FFFFFF"
+            android:dropDownVerticalOffset="4dp"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 

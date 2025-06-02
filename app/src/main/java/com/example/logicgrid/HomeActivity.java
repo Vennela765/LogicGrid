@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.google.android.material.textfield.TextInputEditText;
 import android.widget.ArrayAdapter;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+import android.view.ViewGroup;
 
 public class HomeActivity extends AppCompatActivity implements PlayersAdapter.OnPlayerClickListener {
     private DrawerLayout drawerLayout;
@@ -148,7 +149,24 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
                 this,
                 android.R.layout.simple_dropdown_item_1line,
                 playerNames
-            );
+            ) {
+                @Override
+                public View getView(int position, View convertView, ViewGroup parent) {
+                    TextView view = (TextView) super.getView(position, convertView, parent);
+                    view.setTextColor(0xFF000000);
+                    view.setBackgroundColor(0xFFFFFFFF);
+                    return view;
+                }
+
+                @Override
+                public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                    TextView view = (TextView) super.getDropDownView(position, convertView, parent);
+                    view.setTextColor(0xFF000000);
+                    view.setBackgroundColor(0xFFFFFFFF);
+                    view.setPadding(48, 32, 48, 32);
+                    return view;
+                }
+            };
             nameInput.setAdapter(adapter);
 
             // Set initial selection and stats

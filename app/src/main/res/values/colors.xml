@@ -38,4 +38,6 @@
     <color name="easy_level">#4CAF50</color>
     <color name="medium_level">#FF9800</color>
     <color name="hard_level">#F44336</color>
+
+<!--    <color name="hi">#00FBFBFB</color>-->
 </resources>
