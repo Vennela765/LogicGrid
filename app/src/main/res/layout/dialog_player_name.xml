@@ -38,8 +38,8 @@
         android:hint="@string/select_profile"
         app:boxBackgroundColor="#FFFFFF"
         app:boxStrokeColor="#4A4B5E"
-        app:hintTextColor="#000000"
-        android:textColorHint="#FFFFFF"
+        app:hintTextColor="#9E9E9E"
+        android:textColorHint="#9E9E9E"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
         <com.google.android.material.textfield.MaterialAutoCompleteTextView
