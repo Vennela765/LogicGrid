@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -65,25 +66,36 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
     }
 
     private void showNewPlayerDialog() {
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_new_player, null);
-        EditText nameInput = dialogView.findViewById(R.id.nameInput);
+        // Create and show dialog with custom layout
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(LayoutInflater.from(this).inflate(R.layout.dialog_new_player, null))
+                .create();
 
-        new AlertDialog.Builder(this)
-                .setTitle("Enter Your Name")
-                .setView(dialogView)
-                .setPositiveButton("Start Playing", (dialog, which) -> {
-                    String playerName = nameInput.getText().toString().trim();
-                    if (!playerName.isEmpty()) {
-                        // Create new player
-                        Player newPlayer = new Player(playerName);
-                        dbHelper.addPlayer(newPlayer);
-                        startGame(playerName);
-                    } else {
-                        Toast.makeText(this, "Please enter a name", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
+        // Remove the default title
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        dialog.show();
+
+        // Get references to views
+        EditText nameInput = dialog.findViewById(R.id.nameInput);
+        MaterialButton notYetButton = dialog.findViewById(R.id.notYetButton);
+        MaterialButton letsGoButton = dialog.findViewById(R.id.letsGoButton);
+
+        // Set click listeners
+        notYetButton.setOnClickListener(v -> dialog.dismiss());
+
+        letsGoButton.setOnClickListener(v -> {
+            String playerName = nameInput.getText().toString().trim();
+            if (playerName.isEmpty()) {
+                Toast.makeText(this, "Please enter your name 👋", Toast.LENGTH_SHORT).show();
+            } else {
+                // Create new player
+                Player newPlayer = new Player(playerName);
+                dbHelper.addPlayer(newPlayer);
+                startGame(playerName);
+                dialog.dismiss();
+            }
+        });
     }
 
     private void showExistingPlayerDialog() {
