@@ -113,4 +113,21 @@
     <string name="confirm_player">Confirm Player</string>
     <string name="cancel">Cancel</string>
     <string name="players_leaderboard">Players Leaderboard</string>
+    
+    <!-- Player Name Dialog -->
+    <string name="welcome_title">Welcome Back! 🎯</string>
+    <string name="ready_subtitle">Ready for more puzzles? ✨</string>
+    <string name="select_profile">Select your profile 👤</string>
+    <string name="games_played">Games: %1$d</string>
+    <string name="win_rate">Wins: %1$d%%</string>
+    <string name="not_yet">NOT YET 🤔</string>
+    <string name="lets_go">Let\'s Go! ✏️</string>
+    
+    <!-- New Player Dialog -->
+    <string name="welcome_new">Welcome! 🎮</string>
+    <string name="start_adventure">Let\'s start your adventure! ✨</string>
+    <string name="enter_name">Enter your name 👋</string>
+    <string name="ready_puzzle">Ready to solve puzzles? 🧩</string>
+    <string name="not_yet_button">NOT YET 🤔</string>
+    <string name="lets_go_button">Let\'s Go! ✏️</string>
 </resources>

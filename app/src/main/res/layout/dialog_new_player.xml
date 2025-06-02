@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/white"
+    android:background="@color/background"
     android:padding="24dp">
 
     <!-- Main Welcome Text -->
@@ -12,10 +12,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Welcome! 🎮"
+        android:text="@string/welcome_new"
         android:textSize="32sp"
         android:textStyle="bold"
-        android:textColor="#FF4081"
+        android:textColor="@color/primary"
         android:layout_marginBottom="16dp"/>
 
     <!-- Subtitle -->
@@ -23,28 +23,31 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Let's start your adventure! ✨"
+        android:text="@string/start_adventure"
         android:textSize="18sp"
-        android:textColor="#9C27B0"
+        android:textColor="@color/accent"
         android:layout_marginBottom="24dp"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter your name 👋"
-        app:boxBackgroundColor="#FFFFFF"
-        app:boxStrokeColor="#FF4081"
-        app:hintTextColor="#9C27B0"
+        android:hint="@string/enter_name"
+        app:boxBackgroundColor="@android:color/transparent"
+        app:boxStrokeColor="@color/primary"
+        app:hintTextColor="@color/accent"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/nameInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
             android:maxLines="1"
-            android:textColor="#673AB7"
-            android:textSize="18sp"/>
+            android:textColor="@color/text_primary"
+            android:textSize="18sp"
+            android:importantForAutofill="yes"
+            android:autofillHints="personName"
+            android:contentDescription="@string/enter_name"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -53,25 +56,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Ready to solve puzzles? 🧩"
+        android:text="@string/ready_puzzle"
         android:textSize="18sp"
-        android:textColor="#4CAF50"
+        android:textColor="@color/success"
         android:layout_marginTop="24dp"/>
 
     <!-- Buttons Container -->
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
+        android:layout_gravity="center"
         android:layout_marginTop="24dp">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/notYetButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="NOT YET 🤔"
-            android:textColor="#9C27B0"
+            android:text="@string/not_yet_button"
+            android:textColor="@color/accent"
             android:layout_marginEnd="16dp"
             style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
@@ -79,9 +83,9 @@
             android:id="@+id/letsGoButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Let's Go! ✏️"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#FF4081"
+            android:text="@string/lets_go_button"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/primary"
             app:cornerRadius="24dp"/>
 
     </LinearLayout>

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/white"
+    android:background="@color/background"
     android:padding="24dp">
 
     <!-- Main Welcome Text -->
@@ -12,10 +12,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Welcome Back! 🎯"
+        android:text="@string/welcome_title"
         android:textSize="32sp"
         android:textStyle="bold"
-        android:textColor="#2196F3"
+        android:textColor="@color/primary"
         android:layout_marginBottom="16dp"/>
 
     <!-- Subtitle -->
@@ -23,9 +23,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Ready for more puzzles? ✨"
+        android:text="@string/ready_subtitle"
         android:textSize="18sp"
-        android:textColor="#673AB7"
+        android:textColor="@color/accent"
         android:layout_marginBottom="24dp"/>
 
     <!-- Player Selection -->
@@ -33,10 +33,10 @@
         android:id="@+id/playerNameInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Select your profile 👤"
+        android:hint="@string/select_profile"
         app:boxBackgroundColor="@android:color/transparent"
-        app:boxStrokeColor="#2196F3"
-        app:hintTextColor="#673AB7"
+        app:boxStrokeColor="@color/primary"
+        app:hintTextColor="@color/accent"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -75,8 +75,8 @@
                 android:id="@+id/gamesPlayedText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Games: 0"
-                android:textColor="#673AB7"
+                android:text="@string/games_played"
+                android:textColor="@color/accent"
                 android:textSize="14sp"/>
         </LinearLayout>
 
@@ -98,8 +98,8 @@
                 android:id="@+id/winRateText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Wins: 0%"
-                android:textColor="#4CAF50"
+                android:text="@string/win_rate"
+                android:textColor="@color/success"
                 android:textSize="14sp"/>
         </LinearLayout>
     </LinearLayout>
@@ -116,8 +116,8 @@
             android:id="@+id/notYetButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="NOT YET 🤔"
-            android:textColor="#673AB7"
+            android:text="@string/not_yet"
+            android:textColor="@color/accent"
             android:layout_marginEnd="16dp"
             style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
@@ -125,9 +125,9 @@
             android:id="@+id/letsGoButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Let's Go! ✏️"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#2196F3"
+            android:text="@string/lets_go"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/primary"
             app:cornerRadius="24dp"/>
 
     </LinearLayout>

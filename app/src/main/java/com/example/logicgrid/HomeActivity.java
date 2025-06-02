@@ -1,6 +1,7 @@
 package com.example.logicgrid;
 
-import android.app.Dialog;
+import androidx.activity.OnBackPressedCallback;
+//import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,8 +16,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.textfield.TextInputLayout;
+//import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+//import com.google.android.material.textfield.TextInputLayout;
 import com.example.logicgrid.data.DatabaseHelper;
 import com.example.logicgrid.data.Player;
 import java.util.List;
@@ -24,8 +25,6 @@ import java.util.List;
 public class HomeActivity extends AppCompatActivity implements PlayersAdapter.OnPlayerClickListener {
     private DrawerLayout drawerLayout;
     private CardView leaderboardOverlay;
-    private ImageButton fingerprintButton;
-    private ImageButton closeLeaderboardButton;
     private RecyclerView playersRecyclerView;
     private DatabaseHelper dbHelper;
 
@@ -36,6 +35,7 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
 
         dbHelper = new DatabaseHelper(this);
         setupViews();
+
     }
 
     private void setupViews() {
@@ -53,8 +53,8 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
 
         // Setup leaderboard
         leaderboardOverlay = findViewById(R.id.leaderboardOverlay);
-        fingerprintButton = findViewById(R.id.fingerprintButton);
-        closeLeaderboardButton = findViewById(R.id.closeLeaderboardButton);
+        ImageButton fingerprintButton = findViewById(R.id.fingerprintButton);
+        ImageButton closeLeaderboardButton = findViewById(R.id.closeLeaderboardButton);
         playersRecyclerView = findViewById(R.id.playersRecyclerView);
 
         playersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
