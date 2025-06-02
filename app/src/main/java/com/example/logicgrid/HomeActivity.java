@@ -153,7 +153,7 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
                 @Override
                 public View getView(int position, View convertView, ViewGroup parent) {
                     TextView view = (TextView) super.getView(position, convertView, parent);
-                    view.setTextColor(0xFF000000);
+                    view.setTextColor(0xFF9E9E9E); // Light grey color
                     view.setBackgroundColor(0xFFFFFFFF);
                     return view;
                 }
@@ -161,19 +161,20 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
                 @Override
                 public View getDropDownView(int position, View convertView, ViewGroup parent) {
                     TextView view = (TextView) super.getDropDownView(position, convertView, parent);
-                    view.setTextColor(0xFF000000);
+                    view.setTextColor(0xFF9E9E9E); // Light grey color
                     view.setBackgroundColor(0xFFFFFFFF);
                     view.setPadding(48, 32, 48, 32);
                     return view;
                 }
             };
             nameInput.setAdapter(adapter);
-
+            
+            // Clear the initial text
+            nameInput.setText("", false);
+            
             // Set initial selection and stats
             if (!players.isEmpty()) {
-                Player firstPlayer = players.get(0);
-                nameInput.setText(firstPlayer.getName(), false);
-                updatePlayerStats(firstPlayer, diceIcon, gamesPlayedText, winRateText);
+                updatePlayerStats(null, diceIcon, gamesPlayedText, winRateText);
             }
 
             // Customize dialog text
@@ -205,18 +206,21 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
     }
 
     private void updatePlayerStats(Player player, TextView diceIcon, TextView gamesPlayedText, TextView winRateText) {
-        if (player != null && diceIcon != null && gamesPlayedText != null && winRateText != null) {
-            int gamesPlayed = player.getGamesPlayed();
-            int totalStars = player.getTotalStars();
-            
-            // Keep dice icon as just the icon
-            diceIcon.setText("🎲");
-            
-            // Show games played in the circled area
-            gamesPlayedText.setText(String.format("Games: %d", gamesPlayed));
-            
-            // Update total stars
-            winRateText.setText(String.format("Wins: %d⭐", totalStars));
+        if (diceIcon != null && gamesPlayedText != null && winRateText != null) {
+            if (player != null) {
+                int gamesPlayed = player.getGamesPlayed();
+                int totalStars = player.getTotalStars();
+                
+                // Update games played (orange circle)
+                gamesPlayedText.setText(String.format("Games: %d", gamesPlayed));
+                
+                // Update total stars (blue circle)
+                winRateText.setText(String.format("Wins: %d⭐", totalStars));
+            } else {
+                // Reset stats when no player is selected
+                gamesPlayedText.setText("Games: 0");
+                winRateText.setText("Wins: 0⭐");
+            }
         }
     }
 
