@@ -49,7 +49,7 @@
             android:maxLines="1"
             android:textSize="18sp"
             android:focusable="false"
-            android:textColor="@color/text_primary"/>
+            android:textColor="@color/black"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -74,7 +74,7 @@
                 android:id="@+id/diceIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🎲 0"
+                android:text="🎲"
                 android:textSize="24sp"/>
             
             <TextView

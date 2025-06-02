@@ -17,13 +17,13 @@
         
         <!-- Grid lines -->
         <path
-            android:strokeColor="#E1BEE7"
+            android:strokeColor="#FAABCA"
             android:strokeWidth="2"
             android:pathData="M44,24v60 M64,24v60 M24,44h60 M24,64h60"/>
             
         <!-- Border -->
         <path
-            android:strokeColor="#7A36A0"
+            android:strokeColor="#FF72A2"
             android:strokeWidth="3"
             android:pathData="M24,24h60v60h-60z"/>
             

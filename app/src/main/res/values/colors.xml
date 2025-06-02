@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#1976D2</color>
-    <color name="primary_dark">#1565C0</color>
-    <color name="primary_light">#B388FF</color>
-    <color name="accent">#512DA8</color>
-    <color name="accent_dark">#2e7d32</color>
+    <color name="primary">#FF4081</color>
+    <color name="primary_dark">#F50057</color>
+    <color name="primary_light">#FF80AB</color>
+    <color name="accent">#00BCD4</color>
+    <color name="accent_dark">#0097A7</color>
     <color name="error">#D32F2F</color>
     <color name="error_light">#ffebee</color>
-    <color name="success">#2E7D32</color>
+    <color name="success">#4CAF50</color>
     <color name="success_light">#e8f5e9</color>
-    <color name="cell_border">#7A36A0</color>
-    <color name="cell_selected">#7A36A0</color>
+    <color name="cell_border">#FF4081</color>
+    <color name="cell_selected">#FF4081</color>
     <color name="cell_background">#F5F5F5</color>
-    <color name="text_primary">#212121</color>
+    <color name="text_primary">#FF4081</color>
     <color name="text_secondary">#757575</color>
     <color name="background">#FFFFFF</color>
-    <color name="button_blue">#2196F3</color>
+    <color name="button_blue">#00BCD4</color>
     <color name="button_green">#4CAF50</color>
-    <color name="grid_header">#7A36A0</color>
-    <color name="grid_border">#5E2B7A</color>
+    <color name="grid_header">#FF4081</color>
+    <color name="grid_border">#FF80AB</color>
     <color name="clue_background">#F5F5F5</color>
-    <color name="clue_text">#7A36A0</color>
+    <color name="clue_text">#FF4081</color>
     <color name="white">#FFFFFF</color>
-    <color name="level_background">#F3E5F5</color>
-    <color name="level_text">#7A36A0</color>
-    <color name="grid_background">#F3E5F5</color>
+    <color name="level_background">#FFE0F1</color>
+    <color name="level_text">#FF4081</color>
+    <color name="grid_background">#FFE0F1</color>
     <color name="cell_empty">#FFFFFF</color>
     <color name="cell_yes">#C8E6C9</color>
     <color name="cell_no">#FFCDD2</color>
     <color name="header_text">#FFFFFF</color>
-    <color name="header_background">#7A36A0</color>
-    <color name="clue_item_text">#7A36A0</color>
-    <color name="clue_item_background">#F3E5F5</color>
+    <color name="header_background">#FF4081</color>
+    <color name="clue_item_text">#FF4081</color>
+    <color name="clue_item_background">#FFE0F1</color>
     <color name="black">#000000</color>
 
     <!-- Level difficulty colors -->
