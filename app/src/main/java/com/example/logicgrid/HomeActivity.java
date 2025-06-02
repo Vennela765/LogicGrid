@@ -191,10 +191,13 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
             int gamesPlayed = player.getGamesPlayed();
             int totalStars = player.getTotalStars();
             
-            // Update games played (orange circle)
+            // Keep dice icon as just the icon
+            diceIcon.setText("🎲");
+            
+            // Show games played in the circled area
             gamesPlayedText.setText(String.format("Games: %d", gamesPlayed));
             
-            // Update total stars (blue circle)
+            // Update total stars
             winRateText.setText(String.format("Wins: %d⭐", totalStars));
         }
     }
