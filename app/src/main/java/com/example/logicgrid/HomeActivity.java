@@ -21,6 +21,7 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import java.util.Locale;
 import android.widget.EditText;
 import androidx.activity.OnBackPressedCallback;
+import android.widget.Button;
 
 public class HomeActivity extends AppCompatActivity implements PlayersAdapter.OnPlayerClickListener {
     private CardView leaderboardOverlay;
@@ -173,41 +174,52 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
                 this,
                 players,
                 player -> {
-                    // Show confirmation dialog
-                    new AlertDialog.Builder(this)
-                        .setTitle(R.string.delete_player_title)
-                        .setMessage(String.format(Locale.getDefault(), getString(R.string.delete_player_message), player.getName()))
-                        .setPositiveButton(R.string.delete, (deleteDialog, which) -> {
-                            // Delete player from database
-                            dbHelper.deletePlayer(player.getName());
-                            
-                            // Remove from list
-                            players.remove(player);
-                            
-                            // Update adapters
-                            if (dropdownAdapter != null) {
-                                dropdownAdapter.notifyDataSetChanged();
-                            }
-                            if (playersAdapter != null) {
-                                playersAdapter.updatePlayers(players);
-                                playersAdapter.notifyDataSetChanged();
-                            }
-                            
-                            // Clear selection and reset stats
-                            nameInput.setText("", false);
-                            updatePlayerStats(null, diceIcon, gamesPlayedText, winRateText);
-                            
-                            // Show toast
-                            Toast.makeText(this, R.string.player_deleted, Toast.LENGTH_SHORT).show();
-                            
-                            // If no players left, close dialog and show new player dialog
-                            if (players.isEmpty()) {
-                                dialog.dismiss();
-                                showNewPlayerDialog();
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel, null)
-                        .show();
+                    // Show confirmation dialog with custom layout
+                    View deleteDialogView = LayoutInflater.from(this).inflate(R.layout.dialog_delete_player, null);
+                    TextView messageText = deleteDialogView.findViewById(R.id.messageText);
+                    messageText.setText(String.format(Locale.getDefault(), getString(R.string.delete_player_message), player.getName()));
+
+                    AlertDialog deleteConfirmDialog = new AlertDialog.Builder(this, R.style.DeleteDialogStyle)
+                        .setView(deleteDialogView)
+                        .create();
+
+                    Button cancelButton = deleteDialogView.findViewById(R.id.cancelButton);
+                    Button deleteButton = deleteDialogView.findViewById(R.id.deleteButton);
+
+                    cancelButton.setOnClickListener(v -> deleteConfirmDialog.dismiss());
+                    deleteButton.setOnClickListener(v -> {
+                        // Delete player from database
+                        dbHelper.deletePlayer(player.getName());
+                        
+                        // Remove from list
+                        players.remove(player);
+                        
+                        // Update adapters
+                        if (dropdownAdapter != null) {
+                            dropdownAdapter.notifyDataSetChanged();
+                        }
+                        if (playersAdapter != null) {
+                            playersAdapter.updatePlayers(players);
+                            playersAdapter.notifyDataSetChanged();
+                        }
+                        
+                        // Clear selection and reset stats
+                        nameInput.setText("", false);
+                        updatePlayerStats(null, diceIcon, gamesPlayedText, winRateText);
+                        
+                        // Show toast
+                        Toast.makeText(this, R.string.player_deleted, Toast.LENGTH_SHORT).show();
+                        
+                        // If no players left, close dialog and show new player dialog
+                        if (players.isEmpty()) {
+                            deleteConfirmDialog.dismiss();
+                            showNewPlayerDialog();
+                        }
+                        
+                        deleteConfirmDialog.dismiss();
+                    });
+
+                    deleteConfirmDialog.show();
                 }
             );
             
