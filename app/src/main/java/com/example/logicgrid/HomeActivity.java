@@ -134,13 +134,14 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
             MaterialButton letsGoButton = dialog.findViewById(R.id.letsGoButton);
             TextView gamesPlayedText = dialog.findViewById(R.id.gamesPlayedText);
             TextView winRateText = dialog.findViewById(R.id.winRateText);
+            TextView diceIcon = dialog.findViewById(R.id.diceIcon);
 
             // Sort players by highest level
             players.sort((p1, p2) -> p2.getHighestLevel() - p1.getHighestLevel());
 
-            // Create adapter for player names
+            // Create adapter for player names (just names, no levels)
             String[] playerNames = players.stream()
-                    .map(player -> String.format("%s (Level %d)", player.getName(), player.getHighestLevel()))
+                    .map(Player::getName)
                     .toArray(String[]::new);
             
             ArrayAdapter<String> adapter = new ArrayAdapter<>(
@@ -153,8 +154,8 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
             // Set initial selection and stats
             if (!players.isEmpty()) {
                 Player firstPlayer = players.get(0);
-                nameInput.setText(playerNames[0], false);
-                updatePlayerStats(firstPlayer, gamesPlayedText, winRateText);
+                nameInput.setText(firstPlayer.getName(), false);
+                updatePlayerStats(firstPlayer, diceIcon, gamesPlayedText, winRateText);
             }
 
             // Customize dialog text
@@ -166,14 +167,11 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
 
             nameInput.setOnItemClickListener((parent, view, position, id) -> {
                 Player selectedPlayer = players.get(position);
-                updatePlayerStats(selectedPlayer, gamesPlayedText, winRateText);
+                updatePlayerStats(selectedPlayer, diceIcon, gamesPlayedText, winRateText);
             });
 
             letsGoButton.setOnClickListener(v -> {
-                String selectedName = nameInput.getText().toString();
-                // Extract just the name part before " (Level X)"
-                String playerName = selectedName.split(" \\(Level")[0];
-                
+                String playerName = nameInput.getText().toString().trim();
                 Player selectedPlayer = dbHelper.getPlayerByName(playerName);
                 if (selectedPlayer != null) {
                     startGame(playerName);
@@ -188,12 +186,16 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
         }
     }
 
-    private void updatePlayerStats(Player player, TextView gamesPlayedText, TextView winRateText) {
-        if (player != null && gamesPlayedText != null && winRateText != null) {
+    private void updatePlayerStats(Player player, TextView diceIcon, TextView gamesPlayedText, TextView winRateText) {
+        if (player != null && diceIcon != null && gamesPlayedText != null && winRateText != null) {
             int gamesPlayed = player.getGamesPlayed();
-            int winRate = player.getGamesPlayed() > 0 ? (player.getWins() * 100) / player.getGamesPlayed() : 0;
-            gamesPlayedText.setText(getString(R.string.games_played, gamesPlayed));
-            winRateText.setText(getString(R.string.win_rate, winRate));
+            int totalStars = player.getTotalStars();
+            
+            // Update games played (orange circle)
+            gamesPlayedText.setText(String.format("Games: %d", gamesPlayed));
+            
+            // Update total stars (blue circle)
+            winRateText.setText(String.format("Wins: %d⭐", totalStars));
         }
     }
 
