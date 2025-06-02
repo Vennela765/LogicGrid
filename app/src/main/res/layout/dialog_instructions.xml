@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:background="@color/background">
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="How to Play LogicGrid"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/primary"
+            android:gravity="center"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Game Overview -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Game Overview"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/accent"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LogicGrid is a puzzle game that tests your logical thinking skills. Solve puzzles by marking cells correctly based on the given clues."
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Basic Rules -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Basic Rules"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/accent"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="1. Each puzzle presents a grid with clues\n2. Mark cells with ✓ (yes) or ✗ (no)\n3. Use the clues to determine correct markings\n4. All clues must be satisfied to complete the puzzle"
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- How to Play -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="How to Play"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/accent"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="1. Tap a cell to cycle through markings (empty → ✓ → ✗)\n2. Read each clue carefully\n3. Use logic to determine which cells should be marked\n4. Press 'Check Solution' when you think you've solved it"
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Tips -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tips for Success"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/accent"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="• Start with the most specific clues\n• Use process of elimination\n• Double-check your markings\n• Look for connections between clues\n• Take your time - accuracy is more important than speed"
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Scoring -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Scoring System"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/accent"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="⭐⭐⭐ Perfect solution with minimal moves\n⭐⭐ Good solution with few extra moves\n⭐ Solution found but can be improved"
+            android:textSize="16sp"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Close Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/closeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Got it!"
+            android:textColor="@color/white"
+            app:cornerRadius="24dp"/>
+
+    </LinearLayout>
+</ScrollView> 

@@ -49,6 +49,7 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
         MaterialButton playButton = findViewById(R.id.playButton);
         MaterialButton newPlayerButton = findViewById(R.id.newPlayerButton);
         MaterialButton existingPlayerButton = findViewById(R.id.existingPlayerButton);
+        ImageButton instructionsButton = findViewById(R.id.instructionsButton);
 
         // Hide the main play button as we're using new/existing player buttons
         playButton.setVisibility(View.GONE);
@@ -56,6 +57,7 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
         // Set click listeners
         newPlayerButton.setOnClickListener(v -> showNewPlayerDialog());
         existingPlayerButton.setOnClickListener(v -> showExistingPlayerDialog());
+        instructionsButton.setOnClickListener(v -> showInstructionsDialog());
 
         // Setup leaderboard
         leaderboardOverlay = findViewById(R.id.leaderboardOverlay);
@@ -244,6 +246,20 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
         players.sort((p1, p2) -> p2.getHighestLevel() - p1.getHighestLevel());
         PlayersAdapter adapter = new PlayersAdapter(players, this);
         playersRecyclerView.setAdapter(adapter);
+    }
+
+    private void showInstructionsDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(LayoutInflater.from(this).inflate(R.layout.dialog_instructions, null))
+                .create();
+
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.show();
+
+        MaterialButton closeButton = dialog.findViewById(R.id.closeButton);
+        if (closeButton != null) {
+            closeButton.setOnClickListener(v -> dialog.dismiss());
+        }
     }
 
     @Override
