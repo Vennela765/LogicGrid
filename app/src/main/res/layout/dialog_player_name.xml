@@ -39,15 +39,16 @@
         app:boxBackgroundColor="@android:color/transparent"
         app:boxStrokeColor="@color/primary"
         app:hintTextColor="@color/accent"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
             android:id="@+id/nameInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
+            android:inputType="none"
             android:maxLines="1"
             android:textSize="18sp"
+            android:focusable="false"
             android:textColor="@color/text_primary"/>
 
     </com.google.android.material.textfield.TextInputLayout>

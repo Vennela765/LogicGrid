@@ -24,6 +24,8 @@ import com.example.logicgrid.data.Player;
 import java.util.List;
 import android.widget.TextView;
 import com.google.android.material.textfield.TextInputEditText;
+import android.widget.ArrayAdapter;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 public class HomeActivity extends AppCompatActivity implements PlayersAdapter.OnPlayerClickListener {
     private DrawerLayout drawerLayout;
@@ -127,7 +129,7 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
             // Get references to views
             TextView welcomeTitle = dialog.findViewById(R.id.welcomeTitle);
             TextView readySubtitle = dialog.findViewById(R.id.readySubtitle);
-            TextInputEditText nameInput = dialog.findViewById(R.id.nameInput);
+            MaterialAutoCompleteTextView nameInput = dialog.findViewById(R.id.nameInput);
             MaterialButton notYetButton = dialog.findViewById(R.id.notYetButton);
             MaterialButton letsGoButton = dialog.findViewById(R.id.letsGoButton);
             TextView gamesPlayedText = dialog.findViewById(R.id.gamesPlayedText);
@@ -136,10 +138,22 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
             // Sort players by highest level
             players.sort((p1, p2) -> p2.getHighestLevel() - p1.getHighestLevel());
 
-            // Set initial stats with first player
+            // Create adapter for player names
+            String[] playerNames = players.stream()
+                    .map(player -> String.format("%s (Level %d)", player.getName(), player.getHighestLevel()))
+                    .toArray(String[]::new);
+            
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                playerNames
+            );
+            nameInput.setAdapter(adapter);
+
+            // Set initial selection and stats
             if (!players.isEmpty()) {
                 Player firstPlayer = players.get(0);
-                nameInput.setText(firstPlayer.getName());
+                nameInput.setText(playerNames[0], false);
                 updatePlayerStats(firstPlayer, gamesPlayedText, winRateText);
             }
 
@@ -150,34 +164,22 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
             // Set click listeners
             notYetButton.setOnClickListener(v -> dialog.dismiss());
 
+            nameInput.setOnItemClickListener((parent, view, position, id) -> {
+                Player selectedPlayer = players.get(position);
+                updatePlayerStats(selectedPlayer, gamesPlayedText, winRateText);
+            });
+
             letsGoButton.setOnClickListener(v -> {
-                String playerName = nameInput.getText().toString().trim();
-                if (playerName.isEmpty()) {
-                    Toast.makeText(this, "Please select a profile 👋", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                String selectedName = nameInput.getText().toString();
+                // Extract just the name part before " (Level X)"
+                String playerName = selectedName.split(" \\(Level")[0];
+                
                 Player selectedPlayer = dbHelper.getPlayerByName(playerName);
                 if (selectedPlayer != null) {
                     startGame(playerName);
                     dialog.dismiss();
-                }
-            });
-
-            // Setup name input suggestions
-            nameInput.setOnFocusChangeListener((v, hasFocus) -> {
-                if (hasFocus) {
-                    String[] playerNames = players.stream()
-                            .map(Player::getName)
-                            .toArray(String[]::new);
-
-                    new AlertDialog.Builder(this)
-                            .setTitle("Select Your Profile")
-                            .setItems(playerNames, (d, which) -> {
-                                Player selectedPlayer = players.get(which);
-                                nameInput.setText(selectedPlayer.getName());
-                                updatePlayerStats(selectedPlayer, gamesPlayedText, winRateText);
-                            })
-                            .show();
+                } else {
+                    Toast.makeText(this, "Please select a valid profile", Toast.LENGTH_SHORT).show();
                 }
             });
 
