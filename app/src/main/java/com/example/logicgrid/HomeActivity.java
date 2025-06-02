@@ -22,6 +22,8 @@ import com.google.android.material.button.MaterialButton;
 import com.example.logicgrid.data.DatabaseHelper;
 import com.example.logicgrid.data.Player;
 import java.util.List;
+import android.widget.TextView;
+import com.google.android.material.textfield.TextInputEditText;
 
 public class HomeActivity extends AppCompatActivity implements PlayersAdapter.OnPlayerClickListener {
     private DrawerLayout drawerLayout;
@@ -100,9 +102,9 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
 
     private void showExistingPlayerDialog() {
         // Get all players from database
-        String[] players = dbHelper.getAllPlayerNames();
+        List<Player> players = dbHelper.getAllPlayers();
         
-        if (players == null || players.length == 0) {
+        if (players == null || players.isEmpty()) {
             new AlertDialog.Builder(this)
                 .setTitle("No Existing Players")
                 .setMessage("There are no existing players. Would you like to create a new player?")
@@ -112,14 +114,85 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
             return;
         }
 
-        new AlertDialog.Builder(this)
-                .setTitle("Select Your Profile")
-                .setItems(players, (dialog, which) -> {
-                    String selectedPlayer = players[which];
-                    startGame(selectedPlayer);
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
+        try {
+            // Create and show dialog with custom layout
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setView(LayoutInflater.from(this).inflate(R.layout.dialog_player_name, null))
+                    .create();
+
+            // Remove the default title
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.show();
+
+            // Get references to views
+            TextView welcomeTitle = dialog.findViewById(R.id.welcomeTitle);
+            TextView readySubtitle = dialog.findViewById(R.id.readySubtitle);
+            TextInputEditText nameInput = dialog.findViewById(R.id.nameInput);
+            MaterialButton notYetButton = dialog.findViewById(R.id.notYetButton);
+            MaterialButton letsGoButton = dialog.findViewById(R.id.letsGoButton);
+            TextView gamesPlayedText = dialog.findViewById(R.id.gamesPlayedText);
+            TextView winRateText = dialog.findViewById(R.id.winRateText);
+
+            // Sort players by highest level
+            players.sort((p1, p2) -> p2.getHighestLevel() - p1.getHighestLevel());
+
+            // Set initial stats with first player
+            if (!players.isEmpty()) {
+                Player firstPlayer = players.get(0);
+                nameInput.setText(firstPlayer.getName());
+                updatePlayerStats(firstPlayer, gamesPlayedText, winRateText);
+            }
+
+            // Customize dialog text
+            welcomeTitle.setText("Welcome Back!");
+            readySubtitle.setText("Select your profile to continue");
+
+            // Set click listeners
+            notYetButton.setOnClickListener(v -> dialog.dismiss());
+
+            letsGoButton.setOnClickListener(v -> {
+                String playerName = nameInput.getText().toString().trim();
+                if (playerName.isEmpty()) {
+                    Toast.makeText(this, "Please select a profile 👋", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Player selectedPlayer = dbHelper.getPlayerByName(playerName);
+                if (selectedPlayer != null) {
+                    startGame(playerName);
+                    dialog.dismiss();
+                }
+            });
+
+            // Setup name input suggestions
+            nameInput.setOnFocusChangeListener((v, hasFocus) -> {
+                if (hasFocus) {
+                    String[] playerNames = players.stream()
+                            .map(Player::getName)
+                            .toArray(String[]::new);
+
+                    new AlertDialog.Builder(this)
+                            .setTitle("Select Your Profile")
+                            .setItems(playerNames, (d, which) -> {
+                                Player selectedPlayer = players.get(which);
+                                nameInput.setText(selectedPlayer.getName());
+                                updatePlayerStats(selectedPlayer, gamesPlayedText, winRateText);
+                            })
+                            .show();
+                }
+            });
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Unable to show player selection. Please try again.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void updatePlayerStats(Player player, TextView gamesPlayedText, TextView winRateText) {
+        if (player != null && gamesPlayedText != null && winRateText != null) {
+            int gamesPlayed = player.getGamesPlayed();
+            int winRate = player.getGamesPlayed() > 0 ? (player.getWins() * 100) / player.getGamesPlayed() : 0;
+            gamesPlayedText.setText(getString(R.string.games_played, gamesPlayed));
+            winRateText.setText(getString(R.string.win_rate, winRate));
+        }
     }
 
     private void startGame(String playerName) {

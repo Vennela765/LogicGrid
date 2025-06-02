@@ -8,6 +8,8 @@ public class Player {
     private int easyStars;
     private int mediumStars;
     private int hardStars;
+    private int gamesPlayed;
+    private int wins;
 
     public Player(String name) {
         this.name = name;
@@ -17,6 +19,8 @@ public class Player {
         this.easyStars = 0;
         this.mediumStars = 0;
         this.hardStars = 0;
+        this.gamesPlayed = 0;
+        this.wins = 0;
     }
 
     public String getName() {
@@ -25,6 +29,22 @@ public class Player {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getGamesPlayed() {
+        return gamesPlayed;
+    }
+
+    public void setGamesPlayed(int gamesPlayed) {
+        this.gamesPlayed = gamesPlayed;
+    }
+
+    public int getWins() {
+        return wins;
+    }
+
+    public void setWins(int wins) {
+        this.wins = wins;
     }
 
     public int getCurrentLevel(String difficulty) {

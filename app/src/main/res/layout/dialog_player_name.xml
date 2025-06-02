@@ -9,6 +9,7 @@
 
     <!-- Main Welcome Text -->
     <TextView
+        android:id="@+id/welcomeTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -20,6 +21,7 @@
 
     <!-- Subtitle -->
     <TextView
+        android:id="@+id/readySubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -40,6 +42,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/nameInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
@@ -51,6 +54,7 @@
 
     <!-- Player Stats Section -->
     <LinearLayout
+        android:id="@+id/statsSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
