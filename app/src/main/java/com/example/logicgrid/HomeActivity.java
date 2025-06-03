@@ -171,12 +171,21 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
             // Sort players by highest level
             players.sort((p1, p2) -> p2.getHighestLevel() - p1.getHighestLevel());
 
-            // Create the adapter with delete and select functionality
+            // Create the adapter with selection and delete functionality
             dropdownAdapter = new PlayerDropdownAdapter(
                 this,
                 players,
                 player -> {
-                    // Show confirmation dialog with custom layout
+                    // Handle player selection
+                    nameInput.setText(player.getName());
+                    nameInput.dismissDropDown();
+                    updatePlayerStats(player, diceIcon, gamesPlayedText, winRateText);
+                    if (welcomeTitle != null) {
+                        welcomeTitle.setText(String.format(Locale.getDefault(), getString(R.string.welcome_back), player.getName()));
+                    }
+                },
+                player -> {
+                    // Show delete confirmation dialog
                     View deleteDialogView = LayoutInflater.from(this).inflate(R.layout.dialog_delete_player, null);
                     TextView messageText = deleteDialogView.findViewById(R.id.messageText);
                     messageText.setText(String.format(Locale.getDefault(), getString(R.string.delete_player_message), player.getName()));
@@ -221,15 +230,6 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
                     });
 
                     deleteConfirmDialog.show();
-                },
-                player -> {
-                    // Handle player selection
-                    nameInput.setText(player.getName());
-                    nameInput.dismissDropDown();
-                    updatePlayerStats(player, diceIcon, gamesPlayedText, winRateText);
-                    if (welcomeTitle != null) {
-                        welcomeTitle.setText(String.format(Locale.getDefault(), getString(R.string.welcome_back), player.getName()));
-                    }
                 }
             );
             
