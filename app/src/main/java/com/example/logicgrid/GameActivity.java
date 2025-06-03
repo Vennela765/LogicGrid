@@ -45,7 +45,7 @@ public class GameActivity extends AppCompatActivity {
     private static final int CELL_MARGIN = 2;
     private GameLogic gameLogic;
     private int currentGridSize;
-    private static final int LEVELS_PER_DIFFICULTY = 100; // Match with LevelSelectActivity
+    private static final int LEVELS_PER_DIFFICULTY = 50; // Match with LevelSelectActivity
     private float density;
     private DatabaseHelper dbHelper;
     private Player currentPlayer;

@@ -22,7 +22,7 @@ public class LevelSelectActivity extends AppCompatActivity {
     private RecyclerView easyLevelsList;
     private RecyclerView mediumLevelsList;
     private RecyclerView hardLevelsList;
-    private static final int LEVELS_PER_DIFFICULTY = 100;
+    private static final int LEVELS_PER_DIFFICULTY = 50;
     private static final int COLUMNS = 10;
     private DatabaseHelper dbHelper;
     private Player currentPlayer;
