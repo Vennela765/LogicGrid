@@ -38,22 +38,20 @@ public class PlayerDropdownAdapter extends ArrayAdapter<Player> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        View view = createItemView(position, convertView, parent);
-        // For the selected view (main input field), only show the player name
-        TextView nameText = view.findViewById(R.id.playerNameText);
-        Player player = players.get(position);
-        nameText.setText(player.getName());
-        // Hide delete button in main view
-        view.findViewById(R.id.deleteButton).setVisibility(View.GONE);
+        View view = createItemView(position, convertView, parent, true);
         return view;
     }
 
     @Override
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        return createItemView(position, convertView, parent);
+        View view = createItemView(position, convertView, parent, false);
+        // Ensure delete button is visible in dropdown
+        TextView deleteButton = view.findViewById(R.id.deleteButton);
+        deleteButton.setVisibility(View.VISIBLE);
+        return view;
     }
 
-    private View createItemView(int position, View convertView, ViewGroup parent) {
+    private View createItemView(int position, View convertView, ViewGroup parent, boolean isMainView) {
         View view = convertView;
         if (view == null) {
             view = inflater.inflate(R.layout.player_dropdown_item, parent, false);
@@ -65,15 +63,20 @@ public class PlayerDropdownAdapter extends ArrayAdapter<Player> {
 
         nameText.setText(player.getName());
         
-        // Setup click listeners
+        // Hide delete button in main view, show in dropdown
+        deleteButton.setVisibility(isMainView ? View.GONE : View.VISIBLE);
+        
+        // Make the whole item clickable for selection, except the delete button
         nameText.setOnClickListener(v -> {
             if (selectListener != null) {
                 selectListener.onPlayerSelect(player);
             }
         });
         
+        // Handle delete button click
         deleteButton.setOnClickListener(v -> {
             if (deleteListener != null) {
+                v.setPressed(true);  // Show visual feedback
                 deleteListener.onPlayerDelete(player);
             }
         });
