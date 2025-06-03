@@ -15,22 +15,37 @@ public class PlayerDropdownAdapter extends ArrayAdapter<Player> {
     private final LayoutInflater inflater;
     private final List<Player> players;
     private final OnPlayerDeleteListener deleteListener;
+    private final OnPlayerSelectListener selectListener;
 
     public interface OnPlayerDeleteListener {
         void onPlayerDelete(Player player);
     }
 
-    public PlayerDropdownAdapter(Context context, List<Player> players, OnPlayerDeleteListener listener) {
+    public interface OnPlayerSelectListener {
+        void onPlayerSelect(Player player);
+    }
+
+    public PlayerDropdownAdapter(Context context, List<Player> players, 
+                               OnPlayerDeleteListener deleteListener,
+                               OnPlayerSelectListener selectListener) {
         super(context, R.layout.player_dropdown_item, players);
         this.inflater = LayoutInflater.from(context);
         this.players = players;
-        this.deleteListener = listener;
+        this.deleteListener = deleteListener;
+        this.selectListener = selectListener;
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        return createItemView(position, convertView, parent);
+        View view = createItemView(position, convertView, parent);
+        // For the selected view (main input field), only show the player name
+        TextView nameText = view.findViewById(R.id.playerNameText);
+        Player player = players.get(position);
+        nameText.setText(player.getName());
+        // Hide delete button in main view
+        view.findViewById(R.id.deleteButton).setVisibility(View.GONE);
+        return view;
     }
 
     @Override
@@ -49,6 +64,13 @@ public class PlayerDropdownAdapter extends ArrayAdapter<Player> {
         TextView deleteButton = view.findViewById(R.id.deleteButton);
 
         nameText.setText(player.getName());
+        
+        // Setup click listeners
+        nameText.setOnClickListener(v -> {
+            if (selectListener != null) {
+                selectListener.onPlayerSelect(player);
+            }
+        });
         
         deleteButton.setOnClickListener(v -> {
             if (deleteListener != null) {

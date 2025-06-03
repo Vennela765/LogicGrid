@@ -22,6 +22,7 @@ import java.util.Locale;
 import android.widget.EditText;
 import androidx.activity.OnBackPressedCallback;
 import android.widget.Button;
+import android.widget.ArrayAdapter;
 
 public class HomeActivity extends AppCompatActivity implements PlayersAdapter.OnPlayerClickListener {
     private CardView leaderboardOverlay;
@@ -29,6 +30,7 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
     private DatabaseHelper dbHelper;
     private PlayerDropdownAdapter dropdownAdapter;
     private PlayersAdapter playersAdapter;
+    private AlertDialog currentPlayerDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,13 +144,13 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
 
         try {
             View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_player_name, null, false);
-            AlertDialog dialog = new AlertDialog.Builder(this)
+            currentPlayerDialog = new AlertDialog.Builder(this)
                     .setView(dialogView)
                     .create();
 
             // Remove the default title
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.show();
+            currentPlayerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            currentPlayerDialog.show();
 
             // Get references to views with null checks
             TextView welcomeTitle = dialogView.findViewById(R.id.welcomeTitle);
@@ -161,7 +163,7 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
             TextView diceIcon = dialogView.findViewById(R.id.diceIcon);
 
             if (nameInput == null || notYetButton == null || letsGoButton == null) {
-                dialog.dismiss();
+                currentPlayerDialog.dismiss();
                 Toast.makeText(this, R.string.error_loading_dialog, Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -169,8 +171,8 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
             // Sort players by highest level
             players.sort((p1, p2) -> p2.getHighestLevel() - p1.getHighestLevel());
 
-            // Create the final adapter with delete functionality
-            final PlayerDropdownAdapter adapter = new PlayerDropdownAdapter(
+            // Create the adapter with delete and select functionality
+            dropdownAdapter = new PlayerDropdownAdapter(
                 this,
                 players,
                 player -> {
@@ -195,9 +197,7 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
                         players.remove(player);
                         
                         // Update adapters
-                        if (dropdownAdapter != null) {
-                            dropdownAdapter.notifyDataSetChanged();
-                        }
+                        dropdownAdapter.notifyDataSetChanged();
                         if (playersAdapter != null) {
                             playersAdapter.updatePlayers(players);
                             playersAdapter.notifyDataSetChanged();
@@ -210,9 +210,10 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
                         // Show toast
                         Toast.makeText(this, R.string.player_deleted, Toast.LENGTH_SHORT).show();
                         
-                        // If no players left, close dialog and show new player dialog
+                        // If no players left, close dialogs and show new player dialog
                         if (players.isEmpty()) {
                             deleteConfirmDialog.dismiss();
+                            currentPlayerDialog.dismiss();
                             showNewPlayerDialog();
                         }
                         
@@ -220,10 +221,23 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
                     });
 
                     deleteConfirmDialog.show();
+                },
+                player -> {
+                    // Handle player selection
+                    nameInput.setText(player.getName());
+                    nameInput.dismissDropDown();
+                    updatePlayerStats(player, diceIcon, gamesPlayedText, winRateText);
+                    if (welcomeTitle != null) {
+                        welcomeTitle.setText(String.format(Locale.getDefault(), getString(R.string.welcome_back), player.getName()));
+                    }
                 }
             );
             
-            nameInput.setAdapter(adapter);
+            nameInput.setAdapter(dropdownAdapter);
+            
+            // Enable dropdown functionality
+            nameInput.setThreshold(1);
+            nameInput.setOnClickListener(v -> nameInput.showDropDown());
             
             // Clear the initial text
             nameInput.setText("", false);
@@ -242,19 +256,14 @@ public class HomeActivity extends AppCompatActivity implements PlayersAdapter.On
             }
 
             // Set click listeners
-            notYetButton.setOnClickListener(v -> dialog.dismiss());
-
-            nameInput.setOnItemClickListener((parent, view, position, id) -> {
-                Player selectedPlayer = players.get(position);
-                updatePlayerStats(selectedPlayer, diceIcon, gamesPlayedText, winRateText);
-            });
+            notYetButton.setOnClickListener(v -> currentPlayerDialog.dismiss());
 
             letsGoButton.setOnClickListener(v -> {
                 String playerName = nameInput.getText().toString().trim();
                 Player selectedPlayer = dbHelper.getPlayerByName(playerName);
                 if (selectedPlayer != null) {
                     startGame(playerName);
-                    dialog.dismiss();
+                    currentPlayerDialog.dismiss();
                 } else {
                     Toast.makeText(this, R.string.select_valid_profile, Toast.LENGTH_SHORT).show();
                 }
